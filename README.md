@@ -12,6 +12,8 @@
 
 source venvbaike/bin/activate
 
+pip install -r requirements.txt
+
 python run.py
 
 浏览器URL输入 127.0.1:2002/api/reset 初始化数据库
