@@ -8,7 +8,7 @@ from app.api.model import db, User
 
 app = Flask(__name__)
 app.secret_key = '1frMFuWRVPV1'
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://%s:%s@%s/%s" % ('root', '123456', '127.0.0.1', 'baike')
+app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://%s:%s@%s/%s" % ('cjq', 'Cjq@123456', '127.0.0.1', 'baike')
 db.init_app(app)
 login_manager = LoginManager()
 login_manager.login_view = '.login'
