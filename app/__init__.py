@@ -1,4 +1,4 @@
-# coding=utf-8
+# Python 3 sources are UTF-8 by default; no setdefaultencoding needed
 from flask import Flask, render_template
 from flask_login import LoginManager
 

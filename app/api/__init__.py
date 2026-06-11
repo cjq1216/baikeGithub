@@ -1,8 +1,4 @@
-# coding=utf-8
-import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
-
+# Python 3 sources are UTF-8 by default; no setdefaultencoding needed
 from flask import Blueprint, request, abort, redirect, url_for, flash, jsonify
 from flask_login import login_user, login_required,logout_user, current_user
 from app.api.model import User, Lemma, Comment, db
