@@ -27,6 +27,7 @@
 **Requirements**: INFRA-01, INFRA-02, INFRA-03, INFRA-04
 
 **Success Criteria** (what must be TRUE):
+
 1. Application starts via `python run.py` on Python 3.11+ and the home page loads without 500 errors
 2. A registered user can register, log in, create a lemma, search, open detail, edit, and modify returns with a redirect (no 500/blank page) — the original `/api/modify` bug is gone
 3. The `/user/detail` page renders a real lemma (not a `BaseQuery`); viewing a missing lemma shows a friendly 404 page
@@ -34,6 +35,7 @@
 5. `app/api/model.py` no longer creates a duplicate `Flask(__name__)`; all three models have correct `__tablename__`
 
 **Plans**: 2 plans
+
 - [ ] 01-01-PLAN.md — Python 3 迁移 + 依赖替换 (INFRA-01, INFRA-02)
 - [ ] 01-02-PLAN.md — 代码本体 bug 修复 + 重复 Flask 实例清理 (INFRA-03, INFRA-04)
 
@@ -50,6 +52,7 @@
 **Requirements**: AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05, AUTH-06, ROLE-01, ROLE-02, ROLE-03, INFRA-05, INFRA-06, INFRA-09
 
 **Success Criteria** (what must be TRUE):
+
 1. MySQL connection string and Flask `secret_key` are read from environment variables; no credentials appear in source
 2. Registering a user stores a hashed password (never plaintext); logging in validates against the hash
 3. All POST forms (regist / login / add / modify) reject submissions without a valid CSRF token
@@ -58,6 +61,7 @@
 6. Missing pages and unhandled exceptions render a unified friendly Jinja error page (no Flask debug traceback leaks in production)
 
 **Plans**: 3 plans
+
 - Plan 2.1: 凭据/secret 走环境变量 + 密码哈希 (AUTH-01, AUTH-02, AUTH-05, INFRA-09)
 - Plan 2.2: CSRF 保护 + 统一错误页 + `/api/reset` 守卫 (AUTH-03, AUTH-04, INFRA-05, INFRA-06)
 - Plan 2.3: admin 角色 + 管理员删除接口 (AUTH-06, ROLE-01, ROLE-02, ROLE-03)
@@ -75,6 +79,7 @@
 **Requirements**: COMMENT-01, COMMENT-02, COMMENT-03, COMMENT-04, COMMENT-05, COMMENT-06, COMMENT-07
 
 **Success Criteria** (what must be TRUE):
+
 1. A logged-in user can post a comment on a lemma detail page via `POST /api/comment`; the new comment appears in the list without a full-page reload
 2. An anonymous user sees no comment form on the detail page; an anonymous `POST /api/comment` returns 401/403
 3. The detail page lists all comments for that lemma in reverse chronological order (newest first)
@@ -83,6 +88,7 @@
 6. The `Comment` table has a `user_id` foreign key to `User.id`; renaming a username does not orphan historical comments (comments still display the *current* username at read time, while `user_id` is the durable link)
 
 **Plans**: 2 plans
+
 - Plan 3.1: Comment 数据模型重构 + 发布/列表接口 (COMMENT-01, COMMENT-02, COMMENT-03, COMMENT-06)
 - Plan 3.2: 作者删除 + 管理员删除 + 模板集成 (COMMENT-04, COMMENT-05, COMMENT-07)
 
@@ -99,6 +105,7 @@
 **Requirements**: FRONT-01, FRONT-02, FRONT-03, FRONT-04, FRONT-05, FRONT-06, LEMMA-01, LEMMA-02, LEMMA-03, LEMMA-04, LEMMA-05, LEMMA-06, LEMMA-07, LEMMA-08
 
 **Success Criteria** (what must be TRUE):
+
 1. No jQuery or Bootstrap 3 CSS/JS is loaded on any template; the legacy `jquery.min.js` asset is deleted
 2. Pico.css provides base styling; HTMX is loaded and used for at least one partial-update flow (search-as-you-type or comment posting)
 3. The rich-text editor in `add.html` and `modify.html` is replaced with a modern editor (Quill / EasyMDE / Tiptap — chosen at plan time)
@@ -108,6 +115,7 @@
 7. The "相关词条" section lists lemmas whose content contains `[[本词条标题]]` (backlinks), and the view counter increments atomically on each detail GET
 
 **Plans**: 3 plans
+
 - Plan 4.1: 前端栈替换 (jQuery 移除 + Pico.css + HTMX + 现代编辑器) (FRONT-01, FRONT-02, FRONT-03, FRONT-04)
 - Plan 4.2: 七模板重设计 + 可访问性 (FRONT-05)
 - Plan 4.3: 词条产品特性 (updated_at / view_count / wiki 链接 / 相关词条) (FRONT-06, LEMMA-01..08)
@@ -125,6 +133,7 @@
 **Requirements**: INFRA-07, INFRA-08, INFRA-10, INFRA-11, TEST-01, TEST-02, TEST-03, TEST-04, TEST-05
 
 **Success Criteria** (what must be TRUE):
+
 1. `Dockerfile` (multi-stage, `python:3.11-slim`) builds a runnable image that starts the app via gunicorn on port 8000
 2. Container entrypoint runs `flask init-db` (idempotent) on first start, then starts gunicorn; `/api/reset` is not present in the running image
 3. All runtime configuration comes from env vars (`DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `FLASK_SECRET`); no defaults fall back to `root`/`123456`
@@ -135,6 +144,7 @@
 8. README's "Production deploy" section contains full third-party-followable steps: build image, `docker run -e DB_HOST=… -e …`, place behind external nginx reverse proxy, point at external MySQL — and the smoke flow can be completed in a browser after following only these steps
 
 **Plans**: 2 plans
+
 - Plan 5.1: Docker 化 (Dockerfile + entrypoint + env vars + .dockerignore) (INFRA-07, INFRA-08, INFRA-09, INFRA-11)
 - Plan 5.2: pytest smoke 测试 + README 验收文档 (INFRA-10, TEST-01..05)
 
