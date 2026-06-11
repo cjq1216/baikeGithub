@@ -54,10 +54,10 @@
 
 ### Infrastructure & Quality
 
-- [ ] **INFRA-01**: Application runs on Python 3.11+; no `reload(sys)` / `sys.setdefaultencoding` calls remain
-- [ ] **INFRA-02**: `mysql-python` (MySQLdb) is replaced with `mysqlclient`; `requirements.txt` is updated and the venv can be re-built from scratch
-- [ ] **INFRA-03**: `app/api/model.py` no longer creates a duplicate `Flask(__name__)` instance; only `app/__init__.py` constructs the app
-- [ ] **INFRA-04**: The `__tablenanme__` typo is fixed in all three models (`User`, `Lemma`, `Comment`); table names are explicit
+- [x] **INFRA-01**: Application runs on Python 3.11+; no `reload(sys)` / `sys.setdefaultencoding` calls remain
+- [x] **INFRA-02**: `mysql-python` (MySQLdb) is replaced with `mysqlclient`; `requirements.txt` is updated and the venv can be re-built from scratch
+- [x] **INFRA-03**: `app/api/model.py` no longer creates a duplicate `Flask(__name__)` instance; only `app/__init__.py` constructs the app
+- [x] **INFRA-04**: The `__tablenanme__` typo is fixed in all three models (`User`, `Lemma`, `Comment`); table names are explicit
 - [ ] **INFRA-05**: `/api/reset` is no longer exposed in production; it is either guarded by `if not app.debug: abort(404)` or replaced with a `flask init-db` CLI command
 - [ ] **INFRA-06**: A single 404 handler and a single 500 handler render a unified Jinja error page (no default Flask debug page in production)
 - [ ] **INFRA-07**: A `Dockerfile` (multi-stage, `python:3.11-slim` base) builds a runnable image that starts the app via gunicorn on port 8000
@@ -151,10 +151,10 @@ Explicitly excluded. Documented to prevent scope creep.
 | FRONT-04 | Phase 4 | Pending |
 | FRONT-05 | Phase 4 | Pending |
 | FRONT-06 | Phase 4 | Pending |
-| INFRA-01 | Phase 1 | Pending |
-| INFRA-02 | Phase 1 | Pending |
-| INFRA-03 | Phase 1 | Pending |
-| INFRA-04 | Phase 1 | Pending |
+| INFRA-01 | Phase 1 | Complete |
+| INFRA-02 | Phase 1 | Complete |
+| INFRA-03 | Phase 1 | Complete |
+| INFRA-04 | Phase 1 | Complete |
 | INFRA-05 | Phase 2 | Pending |
 | INFRA-06 | Phase 2 | Pending |
 | INFRA-07 | Phase 5 | Pending |
@@ -169,6 +169,7 @@ Explicitly excluded. Documented to prevent scope creep.
 | TEST-05 | Phase 5 | Pending |
 
 **Coverage:**
+
 - v1 requirements: 46 total
 - Mapped to phases: 46
 - Unmapped: 0

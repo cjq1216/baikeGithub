@@ -8,7 +8,7 @@
 
 ## Phases
 
-- [ ] **Phase 1: Foundation (Python 3 + Bug Fixes)** — 让现有 Flask 应用在 Python 3.11+ 上无 bug 跑通,代码本体零隐患
+- [x] **Phase 1: Foundation (Python 3 + Bug Fixes)** — 让现有 Flask 应用在 Python 3.11+ 上无 bug 跑通,代码本体零隐患 (completed 2026-06-11)
 - [ ] **Phase 2: Security & Auth Hardening** — 用户系统从硬编码/明文升级到环境变量 + 密码哈希 + CSRF + admin 角色,登录流程仍可端到端走通
 - [ ] **Phase 3: Comment System** — 实装评论发布/列表/作者删除/管理员删除,详情页拥有完整的评论交互
 - [ ] **Phase 4: Frontend Modernization & Product Features** — 模板全面重设计 + 引入 HTMX/Pico.css/新编辑器 + wiki 链接 + 最后编辑时间 + 浏览数 + 相关词条
@@ -36,8 +36,8 @@
 
 **Plans**: 2 plans
 
-- [ ] 01-01-PLAN.md — Python 3 迁移 + 依赖替换 (INFRA-01, INFRA-02)
-- [ ] 01-02-PLAN.md — 代码本体 bug 修复 + 重复 Flask 实例清理 (INFRA-03, INFRA-04)
+- [x] 01-01-PLAN.md — Python 3 迁移 + 依赖替换 (INFRA-01, INFRA-02)
+- [x] 01-02-PLAN.md — 代码本体 bug 修复 + 重复 Flask 实例清理 (INFRA-03, INFRA-04)
 
 ---
 
@@ -154,7 +154,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation (Python 3 + Bug Fixes) | 0/2 | Not started | - |
+| 1. Foundation (Python 3 + Bug Fixes) | 2/2 | Complete    | 2026-06-11 |
 | 2. Security & Auth Hardening | 0/3 | Not started | - |
 | 3. Comment System | 0/2 | Not started | - |
 | 4. Frontend Modernization & Product Features | 0/3 | Not started | - |
