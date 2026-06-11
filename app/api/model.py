@@ -1,8 +1,4 @@
-# coding=utf-8
-import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
-
+# Python 3 sources are UTF-8 by default; no setdefaultencoding needed
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, current_user
 from flask import Flask
