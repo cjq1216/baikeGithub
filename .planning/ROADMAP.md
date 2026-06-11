@@ -34,8 +34,8 @@
 5. `app/api/model.py` no longer creates a duplicate `Flask(__name__)`; all three models have correct `__tablename__`
 
 **Plans**: 2 plans
-- Plan 1.1: Python 3 迁移 + 依赖替换 (INFRA-01, INFRA-02)
-- Plan 1.2: 代码本体 bug 修复 + 重复 Flask 实例清理 (INFRA-03, INFRA-04)
+- [ ] 01-01-PLAN.md — Python 3 迁移 + 依赖替换 (INFRA-01, INFRA-02)
+- [ ] 01-02-PLAN.md — 代码本体 bug 修复 + 重复 Flask 实例清理 (INFRA-03, INFRA-04)
 
 ---
 
