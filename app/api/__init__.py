@@ -61,12 +61,16 @@ def add():
 @api.route('/modify', methods=['POST'])
 @login_required
 def modify():
-    newTitle = request.form.get('newContent')
+    newTitle = request.form.get('newTitle')
     newContent = request.form.get('newContent')
-    lemma = Lemma(title=newTitle, content=newContent)
-    db.session.merge(lemma)
+    lemma = Lemma.query.filter_by(title=newTitle).first()
+    if lemma is None:
+        flash('修改失败！词条不存在')
+        return redirect(url_for('apple.home'))
+    lemma.content = newContent
     db.session.commit()
     flash('修改成功！')
+    return redirect(url_for('apple.home'))
 
 
 # @api.route('/commen', methods=['POST'])
