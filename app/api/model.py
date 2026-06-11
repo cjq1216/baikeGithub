@@ -1,17 +1,13 @@
 # Python 3 sources are UTF-8 by default; no setdefaultencoding needed
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, current_user
-from flask import Flask
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://%s:%s@%s/%s" % ('root', '123456', '127.0.0.1', 'baike')
-db = SQLAlchemy(app)
 import datetime
 
-#db = SQLAlchemy()
+db = SQLAlchemy()
 
 class User(db.Model, UserMixin):
 
-    __tablenanme__= 'user'
+    __tablename__= 'user'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), unique=True)
     password = db.Column(db.String(40))
@@ -25,7 +21,7 @@ class User(db.Model, UserMixin):
 
 class Lemma(db.Model):
 
-    __tablenanme__= 'lemma'
+    __tablename__= 'lemma'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(40))
     content = db.Column(db.Text)
@@ -40,7 +36,7 @@ class Lemma(db.Model):
 
 class Comment(db.Model):
 
-    __tablenanme__= 'comment'
+    __tablename__= 'comment'
     id = db.Column(db.Integer, primary_key=True)
     #user_name = db.Column(db.String(30), db.ForeignKey('User.name'))
     user_name = db.Column(db.String(30))
