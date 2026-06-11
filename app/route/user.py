@@ -39,7 +39,10 @@ def search():
 @user.route('/detail', methods=['POST'])
 def detail():
     entirelytitle = request.form.get('linklist')
-    fullcontent = Lemma.query.filter_by(title = entirelytitle)
+    fullcontent = Lemma.query.filter_by(title = entirelytitle).all()
+    if not fullcontent:
+        flash('所查词条不存在')
+        return redirect(url_for('apple.home'))
     return render_template('detail.html', fullcontent=fullcontent)
 
 @user.route('/modify')
