@@ -1,4 +1,5 @@
 # Python 3 sources are UTF-8 by default; no setdefaultencoding needed
+from urllib.parse import quote
 from flask import Flask, render_template
 from flask_login import LoginManager
 
@@ -8,7 +9,7 @@ from app.api.model import db, User
 
 app = Flask(__name__)
 app.secret_key = '1frMFuWRVPV1'
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://%s:%s@%s/%s" % ('root', '123456', '127.0.0.1', 'baike')
+app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://%s:%s@%s:%s/%s" % ('cjq', quote('Cjq@123456'), '162.14.107.126', '3307', 'baike')
 db.init_app(app)
 login_manager = LoginManager()
 login_manager.login_view = '.login'
