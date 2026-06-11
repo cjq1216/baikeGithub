@@ -113,21 +113,79 @@ Explicitly excluded. Documented to prevent scope creep.
 | 多语言 i18n | 单一中文界面 |
 | React/Vue 等 SPA | 与"无重前端"诉求冲突 |
 | 编辑者 / 版主等中间角色 | v1 只用 regular + admin 二元角色 |
-| 词条保护 / 锁定 | 任何登录用户都可编辑,管理员可删除兜底 |
+| 词条保护 / 锁定 | 任何登录用户都可编辑(管理员可删除兜底) |
 
 ## Traceability
 
-由 roadmapper 在路线图创建时填充。当前为空 — 路线图阶段会决定每个 requirement 属于哪个 phase。
+由 roadmapper 在路线图创建时填充。详见 `.planning/ROADMAP.md` 中的阶段定义。
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (待 roadmap 填充) | | |
+| AUTH-01 | Phase 2 | Pending |
+| AUTH-02 | Phase 2 | Pending |
+| AUTH-03 | Phase 2 | Pending |
+| AUTH-04 | Phase 2 | Pending |
+| AUTH-05 | Phase 2 | Pending |
+| AUTH-06 | Phase 2 | Pending |
+| ROLE-01 | Phase 2 | Pending |
+| ROLE-02 | Phase 2 | Pending |
+| ROLE-03 | Phase 2 | Pending |
+| LEMMA-01 | Phase 4 | Pending |
+| LEMMA-02 | Phase 4 | Pending |
+| LEMMA-03 | Phase 4 | Pending |
+| LEMMA-04 | Phase 4 | Pending |
+| LEMMA-05 | Phase 4 | Pending |
+| LEMMA-06 | Phase 4 | Pending |
+| LEMMA-07 | Phase 4 | Pending |
+| LEMMA-08 | Phase 4 | Pending |
+| COMMENT-01 | Phase 3 | Pending |
+| COMMENT-02 | Phase 3 | Pending |
+| COMMENT-03 | Phase 3 | Pending |
+| COMMENT-04 | Phase 3 | Pending |
+| COMMENT-05 | Phase 3 | Pending |
+| COMMENT-06 | Phase 3 | Pending |
+| COMMENT-07 | Phase 3 | Pending |
+| FRONT-01 | Phase 4 | Pending |
+| FRONT-02 | Phase 4 | Pending |
+| FRONT-03 | Phase 4 | Pending |
+| FRONT-04 | Phase 4 | Pending |
+| FRONT-05 | Phase 4 | Pending |
+| FRONT-06 | Phase 4 | Pending |
+| INFRA-01 | Phase 1 | Pending |
+| INFRA-02 | Phase 1 | Pending |
+| INFRA-03 | Phase 1 | Pending |
+| INFRA-04 | Phase 1 | Pending |
+| INFRA-05 | Phase 2 | Pending |
+| INFRA-06 | Phase 2 | Pending |
+| INFRA-07 | Phase 5 | Pending |
+| INFRA-08 | Phase 5 | Pending |
+| INFRA-09 | Phase 2 | Pending |
+| INFRA-10 | Phase 5 | Pending |
+| INFRA-11 | Phase 5 | Pending |
+| TEST-01 | Phase 5 | Pending |
+| TEST-02 | Phase 5 | Pending |
+| TEST-03 | Phase 5 | Pending |
+| TEST-04 | Phase 5 | Pending |
+| TEST-05 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: 41 total
-- Mapped to phases: 0
-- Unmapped: 41 ⚠️ (待 roadmap 完成)
+- v1 requirements: 46 total
+- Mapped to phases: 46
+- Unmapped: 0
+
+### Coverage by phase
+
+| Phase | Requirements | Count |
+|-------|--------------|-------|
+| Phase 1: Foundation (Python 3 + Bug Fixes) | INFRA-01, INFRA-02, INFRA-03, INFRA-04 | 4 |
+| Phase 2: Security & Auth Hardening | AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05, AUTH-06, ROLE-01, ROLE-02, ROLE-03, INFRA-05, INFRA-06, INFRA-09 | 12 |
+| Phase 3: Comment System | COMMENT-01, COMMENT-02, COMMENT-03, COMMENT-04, COMMENT-05, COMMENT-06, COMMENT-07 | 7 |
+| Phase 4: Frontend Modernization & Product Features | FRONT-01, FRONT-02, FRONT-03, FRONT-04, FRONT-05, FRONT-06, LEMMA-01, LEMMA-02, LEMMA-03, LEMMA-04, LEMMA-05, LEMMA-06, LEMMA-07, LEMMA-08 | 14 |
+| Phase 5: Docker Deployment, Tests & Acceptance | INFRA-07, INFRA-08, INFRA-10, INFRA-11, TEST-01, TEST-02, TEST-03, TEST-04, TEST-05 | 9 |
+
+**Total: 46/46 mapped (100%)**
 
 ---
+
 *Requirements defined: 2026-06-11*
-*Last updated: 2026-06-11 after brownfield project initialization*
+*Last updated: 2026-06-11 after roadmap created*
