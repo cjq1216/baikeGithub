@@ -19,7 +19,7 @@
 ### User Roles
 
 - [ ] **ROLE-01**: Admin can delete any lemma from the detail page
-- [ ] **ROLE-02**: Admin can delete any comment from the detail page
+- [ ] **ROLE-02**: Admin can delete any comment from the detail page *(deferred to Phase 3 — comment system not yet built; admin blueprint + `admin_required` decorator are in Phase 2 as scaffolding)*
 - [ ] **ROLE-03**: Non-admin users see no admin-only controls; admin controls are visible only to admins
 
 ### Lemma (Core Content)
@@ -128,7 +128,7 @@ Explicitly excluded. Documented to prevent scope creep.
 | AUTH-05 | Phase 2 | Pending |
 | AUTH-06 | Phase 2 | Pending |
 | ROLE-01 | Phase 2 | Pending |
-| ROLE-02 | Phase 2 | Pending |
+| ROLE-02 | Phase 3 | Pending (deferred from Phase 2 per `02-CONTEXT.md` D-20..D-25; admin scaffolding ships in Phase 2) |
 | ROLE-03 | Phase 2 | Pending |
 | LEMMA-01 | Phase 4 | Pending |
 | LEMMA-02 | Phase 4 | Pending |
@@ -179,7 +179,7 @@ Explicitly excluded. Documented to prevent scope creep.
 | Phase | Requirements | Count |
 |-------|--------------|-------|
 | Phase 1: Foundation (Python 3 + Bug Fixes) | INFRA-01, INFRA-02, INFRA-03, INFRA-04 | 4 |
-| Phase 2: Security & Auth Hardening | AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05, AUTH-06, ROLE-01, ROLE-02, ROLE-03, INFRA-05, INFRA-06, INFRA-09 | 12 |
+| Phase 2: Security & Auth Hardening | AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05, AUTH-06, ROLE-01, ROLE-03, INFRA-05, INFRA-06, INFRA-09 | 11 |
 | Phase 3: Comment System | COMMENT-01, COMMENT-02, COMMENT-03, COMMENT-04, COMMENT-05, COMMENT-06, COMMENT-07 | 7 |
 | Phase 4: Frontend Modernization & Product Features | FRONT-01, FRONT-02, FRONT-03, FRONT-04, FRONT-05, FRONT-06, LEMMA-01, LEMMA-02, LEMMA-03, LEMMA-04, LEMMA-05, LEMMA-06, LEMMA-07, LEMMA-08 | 14 |
 | Phase 5: Docker Deployment, Tests & Acceptance | INFRA-07, INFRA-08, INFRA-10, INFRA-11, TEST-01, TEST-02, TEST-03, TEST-04, TEST-05 | 9 |

@@ -49,7 +49,9 @@
 
 **Depends on**: Phase 1
 
-**Requirements**: AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05, AUTH-06, ROLE-01, ROLE-02, ROLE-03, INFRA-05, INFRA-06, INFRA-09
+**Requirements**: AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05, AUTH-06, ROLE-01, ROLE-03, INFRA-05, INFRA-06, INFRA-09
+
+**Note on ROLE-02**: Per `02-CONTEXT.md` (D-20..D-25 + "Deferred Ideas"), ROLE-02 (admin can delete any comment) is **deferred to Phase 3** alongside the rest of the comment system. Phase 2 builds the admin blueprint + `admin_required` decorator + the `User.is_admin` field as scaffolding; the actual `POST /api/admin/comment/<id>/delete` route ships with Phase 3's comment UI.
 
 **Success Criteria** (what must be TRUE):
 
@@ -64,7 +66,7 @@
 
 - Plan 2.1: 凭据/secret 走环境变量 + 密码哈希 (AUTH-01, AUTH-02, AUTH-05, INFRA-09)
 - Plan 2.2: CSRF 保护 + 统一错误页 + `/api/reset` 守卫 (AUTH-03, AUTH-04, INFRA-05, INFRA-06)
-- Plan 2.3: admin 角色 + 管理员删除接口 (AUTH-06, ROLE-01, ROLE-02, ROLE-03)
+- Plan 2.3: admin 角色 + 管理员删除接口 (AUTH-06, ROLE-01, ROLE-03)
 
 ---
 
