@@ -136,12 +136,18 @@ def handle_error(e):
 # D-16 / D-25: `flask init-db` is the production / container entrypoint for
 # bootstrapping the database. It calls the same `init_db()` function used
 # by the dev-only /api/reset route, so dev and prod share one seed path.
+# D-75: --if-empty flag 让容器启动幂等(已有数据秒返,避免重启清生产数据)。
+# 不传 flag 行为完全等同改造前(强制 drop+create+seed)。
 @app.cli.command("init-db")
-def init_db_command():
-    """Drop all, recreate all, seed."""
+@click.option('--if-empty', is_flag=True, help='Skip re-init if User table already has rows.')
+def init_db_command(if_empty):
+    """Drop all, recreate all, seed (idempotent with --if-empty)."""
     from app.api.model import init_db
-    init_db()
-    print('Database initialized.')
+    init_db(if_empty=if_empty)
+    if if_empty:
+        print('Database initialized (or skipped if non-empty).')
+    else:
+        print('Database initialized.')
 
 # D-24: `flask promote-admin <username>` flips is_admin=True on an existing
 # user. Unknown username exits 1 with a printed error. This is the only
