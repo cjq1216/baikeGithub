@@ -5,3 +5,4 @@ mysqlclient>=2.2,<3.0        # Linux/prod: real C extension, fastest
 PyMySQL>=1.1,<2.0            # Windows/dev fallback: pure Python, no MSVC needed. app/__init__.py shim makes it work as MySQLdb.
 Flask-WTF>=1.2,<2.0
 bleach>=6.0,<7.0
+gunicorn>=21.0,<22.0   # 生产 WSGI server (Phase 5 INFRA-07)
