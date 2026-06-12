@@ -73,7 +73,9 @@ def detail():
 @user.route('/modify')
 @login_required
 def modify():
-    return render_template('modify.html')
+    prefill_title = request.args.get('title', '').strip()
+    fullcon = Lemma.query.filter_by(title=prefill_title).first() if prefill_title else None
+    return render_template('modify.html', prefill_title=prefill_title, fullcon=fullcon)
 
 # @user.route('/detail1')
 # @login_required

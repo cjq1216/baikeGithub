@@ -8,9 +8,8 @@
       <h1>搜索结果</h1>
     </header>
 
-    <form action="{{ url_for('apple.search') }}" method="post">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <input type="text" name="searchtext" required value="">
+    <form action="{{ url_for('apple.search') }}" method="get" role="search">
+      <input type="search" name="q" required value="{{ request.args.get('q', '') }}" placeholder="搜索词条...">
       <button type="submit">search</button>
     </form>
   </article>
