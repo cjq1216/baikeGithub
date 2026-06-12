@@ -1,10 +1,12 @@
 ---
-status: gaps_found
+status: passed
 phase: 02-security-auth-hardening
-score: 5/6
+score: 6/6
 verified_at: 2026-06-12
+re_verified_at: 2026-06-12
+re_verification_note: "W-4 fixed in commit e10ec02 — result.html per-result form now carries csrf_token. Re-grep confirms 2 csrf_token fields in result.html (line 41 search form + line 55 per-result form). Search→detail click path no longer triggers CSRFProtect 400."
 verifier: Claude (gsd-verifier)
-method: Static grep + handler source inspection + deviation cross-check against 02-REVIEW.md
+method: Static grep + handler source inspection + deviation cross-check against 02-REVIEW.md + post-fix re-grep
 ---
 
 # Phase 2: Security & Auth Hardening — Verification
