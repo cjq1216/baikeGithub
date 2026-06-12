@@ -11,7 +11,7 @@
 - [x] **Phase 1: Foundation (Python 3 + Bug Fixes)** — 让现有 Flask 应用在 Python 3.11+ 上无 bug 跑通,代码本体零隐患 (completed 2026-06-11)
 - [x] **Phase 2: Security & Auth Hardening** — 用户系统从硬编码/明文升级到环境变量 + 密码哈希 + CSRF + admin 角色,登录流程仍可端到端走通 (completed 2026-06-12)
 - [ ] **Phase 3: Comment System** — 实装评论发布/列表/作者删除/管理员删除,详情页拥有完整的评论交互
-- [ ] **Phase 4: Frontend Modernization & Product Features** — 模板全面重设计 + 引入 HTMX/Pico.css/新编辑器 + wiki 链接 + 最后编辑时间 + 浏览数 + 相关词条
+- [x] **Phase 4: Frontend Modernization & Product Features** — 模板全面重设计 + 引入 HTMX/Pico.css/新编辑器 + wiki 链接 + 最后编辑时间 + 浏览数 + 相关词条 (completed 2026-06-12)
 - [ ] **Phase 5: Docker Deployment, Tests & Acceptance** — Docker 镜像 + 容器初始化 + 完整 README + pytest smoke 测试,第三方可独立端到端验收
 
 ## Phase Details
@@ -123,12 +123,15 @@
 **Plans**: 3 plans
 
 **Wave 1**
+
 - Plan 4.1: 前端栈替换 (jQuery 移除 + Pico.css + HTMX + 现代编辑器) (FRONT-01, FRONT-02, FRONT-03, FRONT-04, FRONT-06, INFRA-12)
 
 **Wave 2** *(blocked on Wave 1 completion)*
+
 - Plan 4.3: 词条产品特性 (updated_at / view_count / wiki 链接 / 相关词条) (FRONT-06, LEMMA-01..08)
 
 **Wave 3** *(blocked on Wave 1 + Wave 2 completion; 模板 consume Plan 4.3 fields/filters)*
+
 - Plan 4.2: 七模板重设计 + 可访问性 (FRONT-05, FRONT-06, LEMMA-01..08)
 
 ---
@@ -168,7 +171,7 @@
 | 1. Foundation (Python 3 + Bug Fixes) | 2/2 | Complete    | 2026-06-11 |
 | 2. Security & Auth Hardening | 3/3 | Complete    | 2026-06-12 |
 | 3. Comment System | 0/2 | Not started | - |
-| 4. Frontend Modernization & Product Features | 0/3 | Not started | - |
+| 4. Frontend Modernization & Product Features | 3/3 | Complete    | 2026-06-12 |
 | 5. Docker Deployment, Tests & Acceptance | 0/2 | Not started | - |
 
 ---

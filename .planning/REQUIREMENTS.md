@@ -24,14 +24,14 @@
 
 ### Lemma (Core Content)
 
-- [ ] **LEMMA-01**: Logged-in user can create a lemma with a title and rich-text content
-- [ ] **LEMMA-02**: Logged-in user can edit an existing lemma from its detail page; submission persists and redirects to the home page (no 500/blank-page error)
-- [ ] **LEMMA-03**: Logged-in user can search lemmas by partial title match; results are listed with title and snippet
-- [ ] **LEMMA-04**: User can view a lemma detail page showing title, content, last-edited timestamp, view count, comments, and related/backlinks
-- [ ] **LEMMA-05**: The detail page view increments the lemma's view counter atomically (no race condition lost-update)
-- [ ] **LEMMA-06**: The detail page shows "最后编辑于 YYYY-MM-DD HH:MM by <username>" based on the lemma's `updated_at` field
-- [ ] **LEMMA-07**: Lemma content supports `[[词条名]]` wiki-link syntax; on render, it becomes a link to that lemma's detail page; non-existent targets render as a red dashed link with "(创建此词条)" affordance
-- [ ] **LEMMA-08**: The detail page shows a "相关词条" (related lemmas) section listing lemmas whose content contains `[[本词条标题]]`
+- [x] **LEMMA-01**: Logged-in user can create a lemma with a title and rich-text content
+- [x] **LEMMA-02**: Logged-in user can edit an existing lemma from its detail page; submission persists and redirects to the home page (no 500/blank-page error)
+- [x] **LEMMA-03**: Logged-in user can search lemmas by partial title match; results are listed with title and snippet
+- [x] **LEMMA-04**: User can view a lemma detail page showing title, content, last-edited timestamp, view count, comments, and related/backlinks
+- [x] **LEMMA-05**: The detail page view increments the lemma's view counter atomically (no race condition lost-update)
+- [x] **LEMMA-06**: The detail page shows "最后编辑于 YYYY-MM-DD HH:MM by <username>" based on the lemma's `updated_at` field
+- [x] **LEMMA-07**: Lemma content supports `[[词条名]]` wiki-link syntax; on render, it becomes a link to that lemma's detail page; non-existent targets render as a red dashed link with "(创建此词条)" affordance
+- [x] **LEMMA-08**: The detail page shows a "相关词条" (related lemmas) section listing lemmas whose content contains `[[本词条标题]]`
 
 ### Comments
 
@@ -45,12 +45,12 @@
 
 ### Frontend Modernization
 
-- [ ] **FRONT-01**: No jQuery is used anywhere in templates or static assets; legacy `app/static/javascripts/jquery.min.js` is removed
-- [ ] **FRONT-02**: HTMX (latest stable) is loaded and used for partial page updates (search-as-you-type, comment posting, etc.)
-- [ ] **FRONT-03**: Bootstrap 3 CSS/JS is removed; Pico.css (or equivalent classless CSS framework) provides base styling
-- [ ] **FRONT-04**: wangEditor 2.x is replaced with a modern rich-text editor (Quill / EasyMDE / Tiptap — final choice made at planning time)
-- [ ] **FRONT-05**: All seven templates (home / signin / register / add / modify / result / detail) are redesigned for visual consistency and basic accessibility (semantic HTML, color contrast, focus states)
-- [ ] **FRONT-06**: Wiki-link `[[标题]]` parsing happens both at write-time (server sanitization) and at render-time (template link generation)
+- [x] **FRONT-01**: No jQuery is used anywhere in templates or static assets; legacy `app/static/javascripts/jquery.min.js` is removed
+- [x] **FRONT-02**: HTMX (latest stable) is loaded and used for partial page updates (search-as-you-type, comment posting, etc.)
+- [x] **FRONT-03**: Bootstrap 3 CSS/JS is removed; Pico.css (or equivalent classless CSS framework) provides base styling
+- [x] **FRONT-04**: wangEditor 2.x is replaced with a modern rich-text editor (Quill / EasyMDE / Tiptap — final choice made at planning time)
+- [x] **FRONT-05**: All seven templates (home / signin / register / add / modify / result / detail) are redesigned for visual consistency and basic accessibility (semantic HTML, color contrast, focus states)
+- [x] **FRONT-06**: Wiki-link `[[标题]]` parsing happens both at write-time (server sanitization) and at render-time (template link generation)
 
 ### Infrastructure & Quality
 
@@ -130,14 +130,14 @@ Explicitly excluded. Documented to prevent scope creep.
 | ROLE-01 | Phase 2 | Complete |
 | ROLE-02 | Phase 3 | Pending (deferred from Phase 2 per `02-CONTEXT.md` D-20..D-25; admin scaffolding ships in Phase 2) |
 | ROLE-03 | Phase 2 | Complete |
-| LEMMA-01 | Phase 4 | Pending |
-| LEMMA-02 | Phase 4 | Pending |
-| LEMMA-03 | Phase 4 | Pending |
-| LEMMA-04 | Phase 4 | Pending |
-| LEMMA-05 | Phase 4 | Pending |
-| LEMMA-06 | Phase 4 | Pending |
-| LEMMA-07 | Phase 4 | Pending |
-| LEMMA-08 | Phase 4 | Pending |
+| LEMMA-01 | Phase 4 | Complete |
+| LEMMA-02 | Phase 4 | Complete |
+| LEMMA-03 | Phase 4 | Complete |
+| LEMMA-04 | Phase 4 | Complete |
+| LEMMA-05 | Phase 4 | Complete |
+| LEMMA-06 | Phase 4 | Complete |
+| LEMMA-07 | Phase 4 | Complete |
+| LEMMA-08 | Phase 4 | Complete |
 | COMMENT-01 | Phase 3 | Pending |
 | COMMENT-02 | Phase 3 | Pending |
 | COMMENT-03 | Phase 3 | Pending |
@@ -145,12 +145,12 @@ Explicitly excluded. Documented to prevent scope creep.
 | COMMENT-05 | Phase 3 | Pending |
 | COMMENT-06 | Phase 3 | Pending |
 | COMMENT-07 | Phase 3 | Pending |
-| FRONT-01 | Phase 4 | Pending |
-| FRONT-02 | Phase 4 | Pending |
-| FRONT-03 | Phase 4 | Pending |
-| FRONT-04 | Phase 4 | Pending |
-| FRONT-05 | Phase 4 | Pending |
-| FRONT-06 | Phase 4 | Pending |
+| FRONT-01 | Phase 4 | Complete |
+| FRONT-02 | Phase 4 | Complete |
+| FRONT-03 | Phase 4 | Complete |
+| FRONT-04 | Phase 4 | Complete |
+| FRONT-05 | Phase 4 | Complete |
+| FRONT-06 | Phase 4 | Complete |
 | INFRA-01 | Phase 1 | Complete |
 | INFRA-02 | Phase 1 | Complete |
 | INFRA-03 | Phase 1 | Complete |
