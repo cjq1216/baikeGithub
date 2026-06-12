@@ -1,165 +1,67 @@
-<!DOCTYPE html>
-<html lang="zh-cn">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+{% extends 'base.html' %}
 
-    <title>Detail</title>
+{% block title %}{{ fullcon.title }} — 641 大百科{% endblock %}
 
-    <!-- Bootstrap core CSS -->
-    <link href="../static/stylesheets/bootstrap.min.css" rel="stylesheet">
+{% block content %}
+  <article>
+    <header>
+      <h1>{{ fullcon.title }}</h1>
+      <p>
+        <small>最后编辑于 {{ fullcon.updated_at.strftime('%Y-%m-%d %H:%M') }}</small>
+        <small> · 浏览 {{ fullcon.view_count }} 次</small>
+      </p>
+    </header>
 
-    <!-- Custom styles for this template -->
-    <link href="../static/stylesheets/mycss/detail.css" rel="stylesheet">
+    <div>{{ fullcon.content | wikilink | safe }}</div>
 
-    <!--引入wangEditor.css-->
-    <link rel="stylesheet" type="text/css" href="../static/stylesheets/wangEditor/wangEditor.min.css">
-
-  </head>
-
-  <body>
-
-    <div class="blog-masthead">
-      <div class="container">
-        <nav class="blog-nav">
-          <a class="blog-nav-item" href="home">主页</a>
-          {% if current_user.is_active %}
-          <a class="blog-nav-item" href="#">欢迎您，{{ current_user.name }}</a>
-          <a class="blog-nav-item" href="/user/add">添加词条</a>
-          <a class="blog-nav-item" href="/api/logout">注销</a>
-          {% else %}
-          <a class="blog-nav-item" href="/user/login">登录</a>
-          {% endif %}
-
-        </nav>
-      </div>
-    </div>
-
-
-    <div class="container">
-      <div class="search">
-        <form action="/user/search", method="post">
-          <input type="text" class="col-sm-8 form-control searchtext" id="searchtext" name="searchtext"></input>
-           <button class="btn btn-sm btn-primary btn-block" type="submit" style="width:25%;height:20%;">search</button>
-        </form>
-      </div>
-
-    <form role="form" action="/api/modify" method="post">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      {% for fullcon in fullcontent %}
-      <div class="blog-header">
-        <input name="newTitle" value= {{ fullcon.title }} style="display:none"><h1 class="blog-title">{{ fullcon.title }}</h1></input>
-      </div>
-      <div class="row">
-        <div class="col-lg-10 blog-main">
-          <div class="blog-post" name="det" id="det">
-              <textarea id="content1" style="height:800px;max-height:1200px;wigth:100%" name="newContent">{{fullcon.content}}</textarea>
-          </div>
-        </div><!-- /.blog-main -->
-      </div><!-- /.row -->
-
-
-      {% if current_user.is_active %}
-      <div class="modify-btn">
-        <button class="btn btn-lg btn-primary btn-block" type="button" id="modify">修改词条</button>
-        <button class="btn btn-lg btn-primary btn-block" type="submit" id="confirmModify">确认修改</button>
-        <button class="btn btn-lg btn-primary btn-block" type="button" id="cancelModify">放弃修改</button>
-        <br>
-      </div>
+    <footer>
+      {% if current_user.is_authenticated %}
+      <a href="{{ url_for('apple.modify') }}" role="button" class="secondary">修改词条</a>
       {% endif %}
-    </form>
-
-    {% if current_user.is_authenticated and current_user.is_admin %}
-    <form action="{{ url_for('admin.delete_lemma', lemma_id=fullcon.id) }}" method="post" style="display:inline">
+      {% if current_user.is_authenticated and current_user.is_admin %}
+      <form action="{{ url_for('admin.delete_lemma', lemma_id=fullcon.id) }}" method="post" style="display:inline">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button class="btn btn-lg btn-danger btn-block" type="submit" id="deleteLemma">删除词条</button>
-    </form>
-    {% endif %}
+        <button type="submit" class="contrast" onclick="return confirm('确定删除该词条?')">删除词条</button>
+      </form>
+      {% endif %}
+    </footer>
+  </article>
+
+  {% if related_lemmas %}
+  <aside>
+    <h3>相关词条</h3>
+    <ul>
+      {% for related in related_lemmas %}
+      <li><a href="{{ url_for('apple.detail', title=related.title) }}">{{ related.title }}</a></li>
+      {% endfor %}
+    </ul>
+  </aside>
+  {% endif %}
+
+  <section id="comments">
+    <h2>评论</h2>
+    <div id="comments-list"
+         hx-on::after-request="if(event.detail.successful) this.reset()">
+      {% for comment in comments %}
+        {% include '_comment.html' %}
+      {% endfor %}
+    </div>
 
     {% if current_user.is_authenticated %}
-    <div class="comment-form-container">
-        <form action="/api/comment" method="post" class="form-signin">
-            <input type="hidden" name="lemma_id" value="{{ fullcontent[0].id }}">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <textarea name="content" maxlength="320" required class="form-control" rows="3" placeholder="您说～"></textarea>
-            <button class="btn btn-primary" type="submit">发布评论</button>
-        </form>
-    </div>
+    <form hx-post="{{ url_for('api.comment') }}"
+          hx-target="#comments-list"
+          hx-swap="afterbegin"
+          hx-on::after-request="if(event.detail.successful) this.reset()"
+          action="{{ url_for('api.comment') }}"
+          method="post">
+      <input type="hidden" name="lemma_id" value="{{ fullcon.id }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label>
+        您说～
+        <textarea name="content" maxlength="320" required rows="3"></textarea>
+      </label>
+      <button type="submit">发布评论</button>
+    </form>
     {% endif %}
-
-      <div class= "comment-container" id="comment">
-        {% for comment in comments %}
-        <div class= "single-comment" id="singleComment">
-          <div class="line"  style="width:100%;margin: 1px;height:2%;border-top:1px solid #ddd"></div>
-          <div class= "comment-user">
-            <h4>{{ comment.author.name }}</h4>
-          </div>
-          <div class="comment-text">
-            <p>{{ comment.content }}</p>
-          </div>
-          <div class="comment-footer">
-            <p>{{ comment.time.strftime('%Y-%m-%d %H:%M') }}</p>
-            {% if current_user.is_authenticated and current_user.is_admin %}
-            <form action="{{ url_for('admin.delete_comment', comment_id=comment.id) }}" method="post" style="display:inline" onsubmit="return confirm('确定删除这条评论?');">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button class="btn btn-xs btn-danger" type="submit">删除</button>
-            </form>
-            {% endif %}
-            {% if current_user.is_authenticated and comment.user_id == current_user.id %}
-            <form action="{{ url_for('api.delete_comment', comment_id=comment.id) }}" method="post" style="display:inline" onsubmit="return confirm('确定删除这条评论?');">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button class="btn btn-xs btn-danger" type="submit">删除</button>
-            </form>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-      {% endfor %}
-
-    </div><!-- /.container -->
-
-    <div class="blog-footer">
-      <p>641大百科</p>
-      <p><a href="#">Back to top</a></p>
-    </div>
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="../static/javascripts/jquery-1.11.3.min.js"></script>
-    <script src="../static/javascripts/bootstrap.min.js"></script>
-    <script src="../static/javascripts/docs.min.js"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <!-- <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script> -->
-    <!--这里引用jquery和wangEditor.js-->
-    <script type="text/javascript" src="../static/javascripts/wangEditor/wangEditor.min.js"></script>
-    <script type="text/javascript">
-      var editor = new wangEditor('content1');
-      editor.create();
-      editor.disable();
-      $('#confirmModify').hide();
-      $('#cancelModify').hide();
-      $("#modify").click(function(){
-          editor.enable();
-          $('#modify').hide();
-          $('#confirmModify').show();
-          $('#cancelModify').show();
-      })
-      $('#confirmModify').on('click',function () {
-        // 获取编辑器区域完整html代码
-        var html = editor.$txt.html();
-        content = html;
-        return content;
-      });
-      $('#cancelModify').on('click', function() {
-      	location.href="/user/home"
-      });
-      </script>
-    </script>
-
-    {% endfor %}
-  </body>
-</html>
+  </section>
+{% endblock %}
