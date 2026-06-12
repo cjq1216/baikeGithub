@@ -52,6 +52,7 @@
           {% for result in results %}
           <div class="blog-post">
             <form action="/user/detail" method="post" >
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <!-- <h3 class="blog-post-title"><button class="btn btn-lg btn-link" style="background-color:transparent; font-size:14; color:2fb2e8;" type="submit"  name="linklist" onclick='return clickevent(this)'>{{ result.title }}</button></h3> -->
               <h3 class="blog-post-title"><input name="linklist" value= {{ result.title }} style="display:none"><button class="btn btn-lg btn-link" style=" font-size:14; color:2fb2e8;" type="submit">{{ result.title }}</button></input></h3>
             </form>
