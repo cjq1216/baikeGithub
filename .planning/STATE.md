@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready to plan
-last_updated: "2026-06-12T04:15:33.816Z"
+status: Ready to execute
+last_updated: "2026-06-12T08:42:00.000Z"
 progress:
   total_phases: 5
-  completed_phases: 3
-  total_plans: 10
-  completed_plans: 8
-  percent: 60
+  completed_phases: 4
+  total_plans: 12
+  completed_plans: 10
+  percent: 83
 ---
 
 # State: 互动百科 产品化升级
@@ -28,10 +28,10 @@ progress:
 ## Current Position
 
 Phase: 5
-**Phase**: 3 — Comment System
-**Status**: ✅ Complete (Plans 3.1 + 3.2 delivered, all 7 SUCCESS criteria statically verified)
-**Progress bar**: `[██████████░░░░░░░░░░]` 3/5 phases complete (7/12 plans done)
-**Next action**: `/gsd-execute-phase 4` — Frontend Modernization & Product Features
+**Phase**: 5 — Docker Deployment, Tests & Acceptance
+**Status**: 📋 Planned (Plans 5.1 + 5.2 + 14 tasks, plan-checker verdict FLAG — 5 minor gaps accepted by user, executor fills)
+**Progress bar**: `[████████████████░░░░]` 4/5 phases complete (10/12 plans done, 2 plans planned)
+**Next action**: `/gsd-execute-phase 5` — Plan 5.1 (Docker 化) → Plan 5.2 (pytest + README)
 
 ## Performance Metrics
 
@@ -39,8 +39,9 @@ Phase: 5
 |--------|-------|
 | Total phases | 5 |
 | Total plans | 12 |
-| Phases complete | 3 (Phase 1, 2, 3) |
-| Plans complete | 7 (1.1, 1.2, 2.1, 2.2, 2.3, 3.1, 3.2) |
+| Phases complete | 4 (Phase 1, 2, 3, 4) |
+| Plans complete | 10 (1.1, 1.2, 2.1, 2.2, 2.3, 3.1, 3.2, 4.1, 4.2, 4.3) |
+| Plans planned | 2 (5.1, 5.2) |
 | Avg plans/phase | 2.4 |
 | v1 requirements | 46 |
 | Mapped requirements | 46 |
@@ -89,8 +90,8 @@ Phase: 5
 | 1 | Foundation (Python 3 + Bug Fixes) | 2 | INFRA-01..04 | ✅ Complete |
 | 2 | Security & Auth Hardening | 3 | AUTH-01..06, ROLE-01..03, INFRA-05, INFRA-06, INFRA-09 | ✅ Complete |
 | 3 | Comment System | 2 | COMMENT-01..07, ROLE-02 | ✅ Complete (2026-06-12) |
-| 4 | Frontend Modernization & Product Features | 3 | FRONT-01..06, LEMMA-01..08 | Not started |
-| 5 | Docker Deployment, Tests & Acceptance | 2 | INFRA-07, INFRA-08, INFRA-10, INFRA-11, TEST-01..05 | Not started |
+| 4 | Frontend Modernization & Product Features | 3 | FRONT-01..06, LEMMA-01..08 | ✅ Complete (2026-06-12) |
+| 5 | Docker Deployment, Tests & Acceptance | 2 | INFRA-07, INFRA-08, INFRA-10, INFRA-11, TEST-01..05 | 📋 Planned (2026-06-12) |
 
 ## Phase 3 Delivery
 
@@ -119,6 +120,15 @@ Phase: 5
 
 ## Session Continuity
 
-- Last session: 2026-06-12 — Phase 3 executed, both plans committed, all 7 SCs statically verified
-- Next action: `/gsd-execute-phase 4` (Frontend Modernization & Product Features)
-- Resume point: Phase 4 — HTMX + Pico.css migration, wiki links, view_count, related lemmas
+- Last session: 2026-06-12 — Phase 5 planning complete (discuss + plan + plan-checker FLAG accepted), 14 tasks across 2 plans ready for execution
+- Next action: `/gsd-execute-phase 5` (Docker 化 → pytest + README)
+- Resume point: Phase 5 Plan 5.1 T1 (requirements.txt +gunicorn) → T2 (init_db() if_empty 扩展) → ... → 5.1 T8 (docker-compose.example.yml) → 5.2 wave 2
+
+## Phase 5 Planning Artifacts
+
+- `05-CONTEXT.md` — 34 locked decisions (D-75..D-88 + CD-21..CD-40)
+- `05-DISCUSSION-LOG.md` — 2 gray areas discussed (entrypoint 协议 + README 形态)
+- `05-01-PLAN.md` (509 lines, 8 tasks, wave 1) — INFRA-07/08/11
+- `05-02-PLAN.md` (683 lines, 6 tasks, wave 2, depends on 5.1) — INFRA-10 + TEST-01..05
+- plan-checker verdict: **FLAG** (8/8 SUCCESS covered, 5 minor gaps in test action text — executor fills concrete assert code)
+- ROADMAP `INFRA-09` 误标 noted in Plan 5.1 NOT Covered section (实际在 Phase 2 已 verified)
