@@ -1,77 +1,39 @@
-<!DOCTYPE html>
-<html lang="zh-cn">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+{% extends 'base.html' %}
 
-    <title>641大百科</title>
+{% block title %}641 大百科 — 主页{% endblock %}
 
-    <!-- Bootstrap core CSS -->
-    <link href="../static/stylesheets/bootstrap.min.css" rel="stylesheet">
+{% block content %}
+  <article>
+    <header>
+      <h1>搜索词条</h1>
+      <p>输入词条标题的关键字,边输边搜。</p>
+    </header>
 
-    <!-- Custom styles for this template -->
-    <link href="../static/stylesheets/mycss/cover.css" rel="stylesheet">
+    {# HTMX 边输边出搜索框(D-45):1 字符起触发,300ms 防抖,请求 /user/search?q=... #}
+    <label for="search-input">关键词</label>
+    <input type="search"
+           name="q"
+           id="search-input"
+           placeholder="输入词条标题..."
+           autocomplete="off"
+           hx-get="{{ url_for('apple.search') }}"
+           hx-trigger="keyup changed delay:300ms"
+           hx-target="#results"
+           hx-indicator="#spinner">
 
-  </head>
+    <span id="spinner" class="htmx-indicator" aria-busy="true">搜索中…</span>
 
-  <body>
+    {# 禁用 JS 时的 fallback(渐进增强):noscript 用户走整页 GET 提交 #}
+    <noscript>
+      <form action="{{ url_for('apple.search') }}" method="get">
+        <label>搜索词条<input type="search" name="q" required></label>
+        <button type="submit">搜索</button>
+      </form>
+    </noscript>
+  </article>
 
-    <div class="site-wrapper">
-      <div class="site-wrapper-inner">
-        <div class="cover-container">
-
-          <div class="masthead clearfix">
-            <div class="inner">
-              <h3 class="masthead-brand">641大百科</h3>
-              <ul class="nav masthead-nav">
-                {% if current_user.is_active %}
-                <li><a href="#">欢迎您，{{ current_user.name }}</a></li>
-                <li><a href="/user/add">添加词条</a></li>
-                <li><a href="/api/logout">注销</a></li>
-                {% else %}
-                <li><a href="/user/login">登录</a></li>
-                {% endif %}
-              </ul>
-            </div>
-          </div>
-
-          <div class="inner cover">
-            <form action="/user/search" method="post">
-              <h1 class="cover-heading">Please enter the searching content</h1>
-              {% with messages = get_flashed_messages() %}
-              {% if messages %}
-              <ul class=flashes>
-                  {% for message in messages %}
-                  <li class="error" style="color:red;">{{ message }}</li>
-                  {% endfor %}
-              </ul>
-              {% endif %}
-              {% endwith %}
-              <input class="lead" type="text" style="color:black;" id="searchtext" name="searchtext" required autofocus></input>
-              <p class="lead1"><button class="btn btn-lg btn-default">search</button></p>
-            </form>
-          </div>
-
-          <div class="mastfoot">
-            <div class="inner">
-              <p>All rights reserved by 641</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="../static/javascripts/jquery-1.11.3.min.js"></script>
-    <script src="../static/javascripts/bootstrap.min.js"></script>
-    <script src="../static/javascripts/docs.min.js"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-
-  </body>
-</html>
+  {# HTMX 搜索结果区域:HTMX 触发时会用 _search_result.html 片段替换 #}
+  <section id="results" aria-live="polite">
+    {% include '_search_result.html' %}
+  </section>
+{% endblock %}
