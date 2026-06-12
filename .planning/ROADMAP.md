@@ -122,9 +122,14 @@
 
 **Plans**: 3 plans
 
-- Plan 4.1: 前端栈替换 (jQuery 移除 + Pico.css + HTMX + 现代编辑器) (FRONT-01, FRONT-02, FRONT-03, FRONT-04)
-- Plan 4.2: 七模板重设计 + 可访问性 (FRONT-05)
+**Wave 1**
+- Plan 4.1: 前端栈替换 (jQuery 移除 + Pico.css + HTMX + 现代编辑器) (FRONT-01, FRONT-02, FRONT-03, FRONT-04, FRONT-06, INFRA-12)
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - Plan 4.3: 词条产品特性 (updated_at / view_count / wiki 链接 / 相关词条) (FRONT-06, LEMMA-01..08)
+
+**Wave 3** *(blocked on Wave 1 + Wave 2 completion; 模板 consume Plan 4.3 fields/filters)*
+- Plan 4.2: 七模板重设计 + 可访问性 (FRONT-05, FRONT-06, LEMMA-01..08)
 
 ---
 
