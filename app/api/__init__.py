@@ -132,6 +132,12 @@ def comment():
     )
     db.session.add(new_comment)
     db.session.commit()
+    # D-73 step 3: 重新查询以 joined-load author backref
+    new_comment = Comment.query.get(new_comment.id)
+    # D-73: HX-Request → 返 _comment.html 片段(让 detail.html hx-swap afterbegin)
+    if request.headers.get('HX-Request'):
+        return render_template('_comment.html', comment=new_comment), 200
+    # 向后兼容 Phase 3 整页刷新
     flash('评论发表成功')
     return redirect(request.referrer or url_for('apple.home'))
 
