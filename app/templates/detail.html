@@ -3,23 +3,23 @@
 {% block title %}{{ fullcon.title }} — 641 大百科{% endblock %}
 
 {% block content %}
-  <article>
+  <article class="baike-card">
     <header>
       <h1>{{ fullcon.title }}</h1>
       <p>
-        <small>最后编辑于 {{ fullcon.updated_at.strftime('%Y-%m-%d %H:%M') }}</small>
-        <small> · 浏览 {{ fullcon.view_count }} 次</small>
+        <span class="baike-meta">最后编辑于 {{ fullcon.updated_at.strftime('%Y-%m-%d %H:%M') }}</span>
+        <span class="baike-meta">浏览 {{ fullcon.view_count }} 次</span>
       </p>
     </header>
 
-    <div>{{ fullcon.content | wikilink | safe }}</div>
+    <div class="baike-prose">{{ fullcon.content | wikilink | safe }}</div>
 
-    <footer>
+    <footer class="baike-detail-actions">
       {% if current_user.is_authenticated %}
       <a href="{{ url_for('apple.modify') }}" role="button" class="secondary">修改词条</a>
       {% endif %}
       {% if current_user.is_authenticated and current_user.is_admin %}
-      <form action="{{ url_for('admin.delete_lemma', lemma_id=fullcon.id) }}" method="post" style="display:inline">
+      <form action="{{ url_for('admin.delete_lemma', lemma_id=fullcon.id) }}" method="post" class="baike-inline-form">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button type="submit" class="contrast" onclick="return confirm('确定删除该词条?')">删除词条</button>
       </form>
@@ -28,7 +28,7 @@
   </article>
 
   {% if related_lemmas %}
-  <aside>
+  <aside class="baike-card" style="margin-top:1.5rem;">
     <h3>相关词条</h3>
     <ul>
       {% for related in related_lemmas %}
@@ -38,7 +38,7 @@
   </aside>
   {% endif %}
 
-  <section id="comments">
+  <section id="comments" class="baike-card" style="margin-top:1.5rem;">
     <h2>评论</h2>
     <div id="comments-list"
          hx-on::after-request="if(event.detail.successful) this.reset()">
@@ -53,7 +53,8 @@
           hx-swap="afterbegin"
           hx-on::after-request="if(event.detail.successful) this.reset()"
           action="{{ url_for('api.comment') }}"
-          method="post">
+          method="post"
+          style="margin-top:1rem;">
       <input type="hidden" name="lemma_id" value="{{ fullcon.id }}">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <label>

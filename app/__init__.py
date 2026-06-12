@@ -81,8 +81,6 @@ def wikilink_filter(content):
         else:
             return (
                 f'<a class="wikilink-missing" '
-                f'style="text-decoration:underline dashed red;'
-                f'color:var(--pico-color-red-500);" '
                 f'href="/user/add?title={title}">'
                 f'{safe_title} (创建此词条)→</a>'
             )

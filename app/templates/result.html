@@ -3,27 +3,37 @@
 {% block title %}搜索结果 — 641 大百科{% endblock %}
 
 {% block content %}
-  <article>
+  <article class="baike-card">
     <header>
       <h1>搜索结果</h1>
     </header>
-
     <form action="{{ url_for('apple.search') }}" method="get" role="search">
       <input type="search" name="q" required value="{{ request.args.get('q', '') }}" placeholder="搜索词条...">
       <button type="submit">search</button>
     </form>
   </article>
 
-  {% for result in results %}
-  <article>
-    <header>
-      <h2><a href="{{ url_for('apple.detail', title=result.title) }}">{{ result.title }}</a></h2>
-      <p>
-        <small>最后编辑于 {{ result.updated_at.strftime('%Y-%m-%d %H:%M') }}</small>
-        <small> · 浏览 {{ result.view_count }} 次</small>
-      </p>
-    </header>
-    <p>Welcome to use '641 Search Engine'. Click to view details.</p>
-  </article>
-  {% endfor %}
+  {% if results %}
+    <div class="baike-grid" style="margin-top:1rem;">
+      {% for result in results %}
+        <article class="baike-card baike-lemma-card">
+          <header>
+            <h3><a href="{{ url_for('apple.detail', title=result.title) }}">{{ result.title }}</a></h3>
+          </header>
+          <p>
+            <span class="baike-meta">最后编辑于 {{ result.updated_at.strftime('%Y-%m-%d %H:%M') }}</span>
+            <span class="baike-meta">浏览 {{ result.view_count }} 次</span>
+          </p>
+          <p>Welcome to use '641 Search Engine'. Click to view details.</p>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="baike-empty baike-card" style="margin-top:1rem;">
+      <div class="baike-empty-icon">∅</div>
+      <p class="baike-empty-title">未找到相关词条</p>
+      <p class="baike-empty-hint">试试其他关键字,或贡献第一条词条。</p>
+      <a href="{{ url_for('apple.add') }}" role="button" class="baike-cta">新增词条</a>
+    </div>
+  {% endif %}
 {% endblock %}

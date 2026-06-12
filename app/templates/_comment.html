@@ -1,20 +1,21 @@
-<article id="comment-{{ comment.id }}" class="comment-card">
+<article id="comment-{{ comment.id }}" class="baike-comment">
   <header>
+    <span class="baike-avatar">{{ comment.author.name[0]|upper }}</span>
     <strong>{{ comment.author.name }}</strong>
-    <small>{{ comment.time.strftime('%Y-%m-%d %H:%M') }}</small>
+    <small>· {{ comment.time.strftime('%Y-%m-%d %H:%M') }}</small>
   </header>
   <p>{{ comment.content }}</p>
   <footer>
     {% if current_user.is_authenticated and current_user.is_admin %}
-    <form action="{{ url_for('admin.delete_comment', comment_id=comment.id) }}" method="post" style="display:inline" hx-on::after-request="if(event.detail.successful) this.closest('article').remove()">
+    <form action="{{ url_for('admin.delete_comment', comment_id=comment.id) }}" method="post" class="baike-inline-form" hx-on::after-request="if(event.detail.successful) this.closest('article').remove()">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <button type="submit" onclick="return confirm('确定删除这条评论?')">删除</button>
+      <button type="submit" class="secondary outline" onclick="return confirm('确定删除这条评论?')">删除</button>
     </form>
     {% endif %}
     {% if current_user.is_authenticated and comment.user_id == current_user.id %}
-    <form action="{{ url_for('api.delete_comment', comment_id=comment.id) }}" method="post" style="display:inline" hx-on::after-request="if(event.detail.successful) this.closest('article').remove()">
+    <form action="{{ url_for('api.delete_comment', comment_id=comment.id) }}" method="post" class="baike-inline-form" hx-on::after-request="if(event.detail.successful) this.closest('article').remove()">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <button type="submit" onclick="return confirm('确定删除这条评论?')">删除</button>
+      <button type="submit" class="secondary outline" onclick="return confirm('确定删除这条评论?')">删除</button>
     </form>
     {% endif %}
   </footer>

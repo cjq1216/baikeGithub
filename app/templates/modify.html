@@ -11,7 +11,7 @@
     <h2>修改词条</h2>
   </article>
 
-  <form action="/api/modify" method="post">
+  <form action="/api/modify" method="post" class="baike-form-card" style="max-width:760px;">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
     <label>
@@ -22,8 +22,10 @@
 
     <label>词条正文</label>
     {# Plan 4.1 视图层暂未传 fullcon (留给 Plan 4.3),此处预填空,编辑器空白启动 #}
-    <div id="editor" style="height:300px; background:white;">
-      {{ fullcon.content | safe if fullcon else '' }}
+    <div class="baike-quill-host">
+      <div id="editor">
+        {{ fullcon.content | safe if fullcon else '' }}
+      </div>
     </div>
     <input type="hidden" name="newContent" id="content-hidden">
 

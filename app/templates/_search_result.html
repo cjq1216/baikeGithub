@@ -2,23 +2,25 @@
    - 由 /user/search GET 端点直接 render_template 返回
    - 由 home.html 和 result.html 显式 include(初始空状态) #}
 {% if lemmas %}
-  <div class="grid">
+  <div class="baike-grid">
     {% for lemma in lemmas %}
-      <article>
+      <article class="baike-card baike-lemma-card">
         <header>
           <h3><a href="{{ url_for('apple.detail', title=lemma.title) }}">{{ lemma.title }}</a></h3>
         </header>
         <p>{{ (lemma.content|striptags)|truncate(200) }}</p>
         <footer>
-          <small>浏览 {{ lemma.view_count }} 次</small>
-          <small>更新于 {{ lemma.updated_at.strftime('%Y-%m-%d %H:%M') if lemma.updated_at else '—' }}</small>
+          <span class="baike-meta">浏览 {{ lemma.view_count }} 次</span>
+          <span class="baike-meta">更新于 {{ lemma.updated_at.strftime('%Y-%m-%d %H:%M') if lemma.updated_at else '—' }}</span>
         </footer>
       </article>
     {% endfor %}
   </div>
 {% else %}
-  <article>
-    <p>未找到相关词条。</p>
-    <a href="{{ url_for('apple.add') }}" role="button">新增词条</a>
-  </article>
+  <div class="baike-empty baike-card">
+    <div class="baike-empty-icon">∅</div>
+    <p class="baike-empty-title">未找到相关词条</p>
+    <p class="baike-empty-hint">试试其他关键字,或贡献第一条词条。</p>
+    <a href="{{ url_for('apple.add') }}" role="button" class="baike-cta">新增词条</a>
+  </div>
 {% endif %}

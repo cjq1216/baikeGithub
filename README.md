@@ -6,15 +6,18 @@
 ## start time
 2017.1.2
 ## 部署说明
-使用virtualenv创建虚拟运行环境venvbaike
+使用virtualenv创建虚拟运行环境venv
+```
+python -m venv venvbaike
+```
 
 在Mysql中创建库baike
-
+```
 source venvbaike/bin/activate
-
 pip install -r requirements.txt
-
 python run.py
+```
+
 
 浏览器URL输入 127.0.1:2002/api/reset 初始化数据库
 

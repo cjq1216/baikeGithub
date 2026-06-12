@@ -3,14 +3,11 @@
 {% block title %}641 大百科 — 主页{% endblock %}
 
 {% block content %}
-  <article>
-    <header>
-      <h1>搜索词条</h1>
-      <p>输入词条标题的关键字,边输边搜。</p>
-    </header>
+  <section class="baike-search-hero">
+    <h1>搜索词条</h1>
+    <p>输入词条标题的关键字,边输边搜。</p>
 
     {# HTMX 边输边出搜索框(D-45):1 字符起触发,300ms 防抖,请求 /user/search?q=... #}
-    <label for="search-input">关键词</label>
     <input type="search"
            name="q"
            id="search-input"
@@ -25,12 +22,12 @@
 
     {# 禁用 JS 时的 fallback(渐进增强):noscript 用户走整页 GET 提交 #}
     <noscript>
-      <form action="{{ url_for('apple.search') }}" method="get">
-        <label>搜索词条<input type="search" name="q" required></label>
+      <form action="{{ url_for('apple.search') }}" method="get" style="margin-top:1rem;">
+        <input type="search" name="q" required placeholder="输入词条标题...">
         <button type="submit">搜索</button>
       </form>
     </noscript>
-  </article>
+  </section>
 
   {# HTMX 搜索结果区域:HTMX 触发时会用 _search_result.html 片段替换 #}
   <section id="results" aria-live="polite">

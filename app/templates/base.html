@@ -27,15 +27,20 @@
     })();
   </script>
 
+  <!-- BAIKE 自定义样式 (Pico 之后) -->
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='stylesheets/baike.css') }}">
+
   {% block head %}{% endblock %}
 </head>
 <body>
   <header class="container">
     <nav>
       <ul>
-        <li><strong>641 大百科</strong></li>
+        <li><a href="{{ url_for('apple.home') }}" class="baike-brand">641 大百科</a></li>
       </ul>
       <ul id="nav-right"
+          class="baike-nav-actions"
           hx-get="/api/nav-fragment"
           hx-trigger="nav-refresh from:body"
           hx-swap="outerHTML">
@@ -45,7 +50,7 @@
       </ul>
       <ul>
         <li>
-          <button id="theme-toggle" aria-label="切换主题" type="button" class="secondary outline">🌓</button>
+          <button id="theme-toggle" aria-label="切换主题" type="button" class="secondary outline">🌙</button>
         </li>
       </ul>
     </nav>
@@ -54,11 +59,12 @@
   <main class="container">
     {% with messages = get_flashed_messages() %}
       {% if messages %}
-        <article>
+        <div class="baike-flash-stack">
           {% for message in messages %}
-            <p style="color:red;">{{ message }}</p>
+            {# flash() 当前未传 category,统一走中性提示色,样式由 baike-flash 接管 #}
+            <div class="baike-flash">{{ message }}</div>
           {% endfor %}
-        </article>
+        </div>
       {% endif %}
     {% endwith %}
 
@@ -74,11 +80,17 @@
     (function() {
       var btn = document.getElementById('theme-toggle');
       if (!btn) return;
+      function syncIcon() {
+        var t = document.documentElement.getAttribute('data-theme') || 'light';
+        btn.textContent = t === 'dark' ? '☀️' : '🌙';
+      }
+      syncIcon();
       btn.addEventListener('click', function() {
         var current = document.documentElement.getAttribute('data-theme') || 'light';
         var next = current === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', next);
         try { localStorage.setItem('pico-preferred-color-scheme', next); } catch (e) {}
+        syncIcon();
       });
     })();
   </script>

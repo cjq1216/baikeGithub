@@ -11,7 +11,7 @@
     <h2>添加词条</h2>
   </article>
 
-  <form action="/api/add" method="post">
+  <form action="/api/add" method="post" class="baike-form-card" style="max-width:760px;">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
     <label>
@@ -21,7 +21,9 @@
     </label>
 
     <label>词条正文</label>
-    <div id="editor" style="height:300px; background:white;"></div>
+    <div class="baike-quill-host">
+      <div id="editor"></div>
+    </div>
     <input type="hidden" name="content" id="content-hidden">
 
     <button type="submit">提交</button>

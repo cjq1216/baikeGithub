@@ -3,7 +3,7 @@
 {% block title %}注册 — 641 大百科{% endblock %}
 
 {% block content %}
-  <article style="max-width:400px;margin:2rem auto;">
+  <article class="baike-form-card">
     <h2>注册</h2>
     <form action="{{ url_for('api.registBusiness') }}" method="post">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
