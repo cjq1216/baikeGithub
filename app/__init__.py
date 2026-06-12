@@ -60,6 +60,15 @@ def _resolve_flask_secret():
 
 
 app = Flask(__name__)
+
+# D-88 / CD-22: ProxyFix 条件启用,默认关闭(dev python run.py 不经代理,
+# 避免 X-Forwarded-For 伪报头被信任)。Dockerfile 设 ENV FLASK_BEHIND_PROXY=true
+# 触发自动启用,让 nginx 反代下 url_for(_external=True) 生成 https URL,
+# request.remote_addr 显示真实客户端 IP。trust 1 层代理(本项目无 CDN/LB)。
+if os.environ.get('FLASK_BEHIND_PROXY', '').lower() == 'true':
+    from werkzeug.middleware.proxy_fix import ProxyFix
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
+
 app.secret_key = _resolve_flask_secret()
 
 
