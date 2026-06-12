@@ -29,15 +29,21 @@ def add():
     prefill_title = request.args.get('title', '').strip()
     return render_template('add.html', prefill_title=prefill_title)
 
-@user.route('/search',methods=['POST'])
+@user.route('/search', methods=['GET'])
 def search():
-    searchtext = request.form.get('searchtext')
-    results = Lemma.query.filter(Lemma.title.like("%"+searchtext+"%")).all()
-    if results:
-        return render_template('result.html', results=results)
-    else :
+    # D-45: GET + ?q=... (旧 POST searchtext 参数已删)
+    q = request.args.get('q', '').strip()
+    lemmas = []
+    if q:
+        lemmas = Lemma.query.filter(Lemma.title.like('%' + q + '%')).limit(20).all()
+    # HTMX 请求:直接返回 _search_result.html 片段
+    if request.headers.get('HX-Request'):
+        return render_template('_search_result.html', lemmas=lemmas)
+    # 非 HTMX:noscript fallback / 浏览器整页 GET 走 result.html 完整页
+    if not lemmas and q:
         flash('所查词条不存在，工作人员正在努力完整词条库～～')
-    return redirect(url_for('apple.home'))
+        return redirect(url_for('apple.home'))
+    return render_template('result.html', results=lemmas)
 
 @user.route('/detail', methods=['GET'])
 def detail():
