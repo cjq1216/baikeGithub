@@ -1,6 +1,6 @@
 # Python 3 sources are UTF-8 by default; no setdefaultencoding needed
 import bleach
-from flask import Blueprint, request, abort, redirect, url_for, flash, jsonify, current_app, make_response
+from flask import Blueprint, request, abort, redirect, url_for, flash, jsonify, current_app, make_response, render_template
 from flask_login import login_user, login_required,logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.api.model import User, Lemma, Comment, db
@@ -160,3 +160,9 @@ def reset():
     from app.api.model import init_db
     init_db()
     return jsonify(error=False)
+
+
+# D-47: HTMX 监听 nav-refresh 时拉取;返 navbar 右侧片段
+@api.route('/nav-fragment', methods=['GET'])
+def nav_fragment():
+    return render_template('_nav_right.html')
