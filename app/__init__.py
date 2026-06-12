@@ -9,7 +9,9 @@ import click
 
 from app.route.user import user
 from app.api import api
+from app.api.admin import admin
 from app.api.model import db, User
+import sys
 
 
 def _resolve_flask_secret():
@@ -62,6 +64,7 @@ login_manager.init_app(app)
 
 app.register_blueprint(user, url_prefix='/user')
 app.register_blueprint(api, url_prefix='/api')
+app.register_blueprint(admin, url_prefix='/api/admin')
 
 # D-10: Enable global CSRF protection on every state-changing POST.
 csrf = CSRFProtect(app)
@@ -93,6 +96,22 @@ def init_db_command():
     from app.api.model import init_db
     init_db()
     print('Database initialized.')
+
+# D-24: `flask promote-admin <username>` flips is_admin=True on an existing
+# user. Unknown username exits 1 with a printed error. This is the only
+# HTTP-less way to grant admin status — the User model accepts is_admin
+# for the seeder, but no request handler passes that arg.
+@app.cli.command("promote-admin")
+@click.argument("username")
+def promote_admin_command(username):
+    from app.api.model import User, db
+    user = User.query.filter_by(name=username).first()
+    if user is None:
+        print(f"User {username!r} not found.")
+        sys.exit(1)
+    user.is_admin = True
+    db.session.commit()
+    print(f"User {username!r} promoted to admin.")
 
 @login_manager.user_loader
 def load_user(id):
