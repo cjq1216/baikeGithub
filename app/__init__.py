@@ -18,7 +18,6 @@ except ImportError:
         raise
 import os
 import re
-from urllib.parse import quote_plus
 from flask import Flask, render_template, request, redirect, url_for, flash, current_app
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
