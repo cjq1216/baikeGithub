@@ -1,0 +1,44 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-06-12T08:28:35.003Z",
+  "phase": "5",
+  "phase_name": "Docker Deployment, Tests & Acceptance",
+  "phase_dir": ".planning/phases/05-docker-deployment-tests-acceptance",
+  "plan": null,
+  "task": null,
+  "total_tasks": null,
+  "status": "paused",
+  "completed_tasks": [
+    {"id": 1, "name": "Phase 5 反模式检查 (无 .continue-here.md)", "status": "done"},
+    {"id": 2, "name": "SPEC.md / CONTEXT.md 已存在检查 (均无)", "status": "done"},
+    {"id": 3, "name": "加载先前上下文 PROJECT/REQUIREMENTS/STATE/ROADMAP + Phase 2/3/4 CONTEXT.md", "status": "done"},
+    {"id": 4, "name": "Todo 交叉引用 (无匹配)", "status": "done"},
+    {"id": 5, "name": "代码库扫描 (.planning/codebase/ 三份地图)", "status": "done"},
+    {"id": 6, "name": "Phase 5 灰色地带分析 (4 个候选)", "status": "done"},
+    {"id": 7, "name": "向用户呈现灰色地带 + 用户选择 (Docker entrypoint + README)", "status": "done"},
+    {"id": 8, "name": "深入讨论 2 个区域 (6 个单问题 + Claude 默认决策 20 项)", "status": "done"},
+    {"id": 9, "name": "写入 CONTEXT.md (D-75..D-88 + CD-21..CD-40) + DISCUSSION-LOG.md", "status": "done"}
+  ],
+  "remaining_tasks": [
+    {"id": 10, "name": "Git commit: docs(05): capture phase context", "status": "not_started"},
+    {"id": 11, "name": "STATE.md 更新: record-session Phase 5 context gathered", "status": "not_started"}
+  ],
+  "blockers": [],
+  "human_actions_pending": [],
+  "decisions": [
+    {"decision": "D-75 init-db 走检表行数 + --if-empty 幂等", "rationale": "容器重启不清生产数据,首次启动自动初始化;最小扩展 Phase 2 D-15", "phase": "5"},
+    {"decision": "D-76 MySQL 等待走内联 Python socket 重试 30s", "rationale": "零外部依赖,用户体验比 docker restart 平滑", "phase": "5"},
+    {"decision": "D-77 entrypoint 用 sh + root 用户", "rationale": "demo 性质 + 外部 nginx 隔离;sh 免安装 bash 12MB", "phase": "5"},
+    {"decision": "D-78 README 面向资深运维 ~150 行", "rationale": "PROJECT.md 假定开发者读者画像", "phase": "5"},
+    {"decision": "D-79 TEST-05 验收清单全进 README.md", "rationale": "单一入口降低认知负担", "phase": "5"},
+    {"decision": "D-80 docker-compose.example.yml 仅 app service + nginx snippet inline", "rationale": "避免读者误以为本项目打包 MySQL", "phase": "5"},
+    {"decision": "CD-25..CD-29 pytest 走 SQLite in-memory + WTF_CSRF_ENABLED=False + test_admin 与 test_smoke 分离", "rationale": "Claude 默认 - 速度 + ROADMAP 推荐", "phase": "5"},
+    {"decision": "CD-21..CD-24 gunicorn workers=2 threads=4 + ProxyFix trust 1 + 不增 healthz + 日志 stdout", "rationale": "Claude 默认 - demo 性质", "phase": "5"}
+  ],
+  "uncommitted_files": [
+    ".planning/phases/05-docker-deployment-tests-acceptance/05-CONTEXT.md",
+    ".planning/phases/05-docker-deployment-tests-acceptance/05-DISCUSSION-LOG.md"
+  ],
+  "next_action": "/clear → /gsd-plan-phase 5 (CONTEXT.md 已就绪,直接进规划)",
+  "context_notes": "Phase 5 是产品化升级最后一站。Phase 1-4 已完成,代码层稳态。Phase 5 任务全是 deployment + test 层新增,不重构已交付代码。CONTEXT.md 含 D-75..D-88 实施决策 + CD-21..CD-40 Claude 默认。资深运维画像 + 单 README.md 入口是用户的核心审美选择,planner 需保持此风格。"
+}
