@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Phase 3 complete
-last_updated: "2026-06-12T10:35:00.000Z"
+last_updated: "2026-06-12T02:59:16.982Z"
 progress:
   total_phases: 5
-  completed_phases: 3
-  total_plans: 12
-  completed_plans: 7
-  percent: 58
+  completed_phases: 2
+  total_plans: 7
+  completed_plans: 5
+  percent: 40
 ---
 
 # State: 互动百科 产品化升级
@@ -95,6 +95,7 @@ Phase: 3
 ## Phase 3 Delivery
 
 **Commits** (6 atomic, sequential):
+
 - `945128b` — feat(03-01/T1): comment schema refactor with user_id FK + cascade
 - `9a2499c` — feat(03-01/T2): implement POST /api/comment with login + validation
 - `fba131e` — feat(03-01/T3): implement author-only POST /api/comment/<id>/delete
@@ -103,6 +104,7 @@ Phase: 3
 - `bb3991b` — feat(03-02/T2): detail.html — inline comment form, delete buttons, author/time fields
 
 **SUCCESS criteria coverage** (statically verified, see `.planning/phases/03-comment-system/03-VERIFICATION.md`):
+
 - SC-1 登录用户发布评论 → `/api/comment` POST route (9a2499c) ✅
 - SC-2 匿名用户不渲染发布 form + 匿名 POST 403 → `{% if current_user.is_authenticated %}` 包裹 (bb3991b) + `@login_required` (9a2499c) ✅
 - SC-3 评论按 time DESC 倒序 → `Comment.time.desc()` (fd6605e) ✅
@@ -112,6 +114,7 @@ Phase: 3
 - SC-7 硬删除 → `db.session.delete + commit` 双端点 (fba131e, 59b4148) ✅
 
 **Deferred to Phase 5 verification** (needs live MySQL + Flask process):
+
 - V3-V7 of Plan 3.1 + V2-V8 of Plan 3.2 (curl / browser end-to-end)
 
 ## Session Continuity
