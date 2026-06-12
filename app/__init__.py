@@ -101,7 +101,7 @@ for _name in _required_db_vars:
 app.config['SQLALCHEMY_DATABASE_URI'] = URL.create(
     drivername='mysql+mysqldb',
     username=os.environ['DB_USER'],
-    password=quote_plus(os.environ['DB_PASSWORD']),
+    password=os.environ['DB_PASSWORD'],
     host=os.environ['DB_HOST'],
     port=int(os.environ['DB_PORT']),
     database=os.environ['DB_NAME'],
