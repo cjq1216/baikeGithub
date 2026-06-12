@@ -69,8 +69,16 @@ class Comment(db.Model):
         self.content = content
 
 
-def init_db():
+def init_db(if_empty: bool = False):
     # Note: seed users (e.g. 'a'/'a') bypass registBusiness length validation — they are created directly here, not via HTTP form. Do not route seed users through registBusiness; the 6-30 char check in Plan 2.1's registBusiness is an HTTP-form contract and does not apply to direct User() construction.
+    # D-75 / CD-36: 容器启动幂等模式 — User 表已有行则秒返,避免容器重启清空生产数据。
+    # 默认 if_empty=False → 行为完全等同改造前(/api/reset + 旧 flask init-db 路径)。
+    if if_empty:
+        try:
+            if User.query.count() > 0:
+                return  # 已初始化,跳过 drop + create + seed
+        except Exception:
+            pass  # 表不存在(OperationalError / ProgrammingError),继续走 drop+create+seed
     db.drop_all()
     db.create_all()
     # D-08: default admin seed account 'a' / 'a' (hashed, is_admin=True).
