@@ -1,9 +1,9 @@
 # Python 3 sources are UTF-8 by default; no setdefaultencoding needed
 from functools import wraps
-from flask import Blueprint, abort, redirect, url_for, flash
+from flask import Blueprint, abort, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 
-from app.api.model import Lemma, db
+from app.api.model import Lemma, Comment, db
 
 admin = Blueprint('admin', __name__)
 
@@ -36,3 +36,16 @@ def delete_lemma(lemma_id):
     db.session.commit()
     flash('删除成功！')
     return redirect(url_for('apple.home'))
+
+
+@admin.route('/comment/<int:comment_id>/delete', methods=['POST'])
+@admin_required
+def delete_comment(comment_id):
+    comment = Comment.query.get(comment_id)
+    if comment is None:
+        flash('删除失败！评论不存在')
+        return redirect(request.referrer or url_for('apple.home'))
+    db.session.delete(comment)
+    db.session.commit()
+    flash('删除成功！')
+    return redirect(request.referrer or url_for('apple.home'))
