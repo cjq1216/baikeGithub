@@ -1,9 +1,11 @@
 # Python 3 sources are UTF-8 by default; no setdefaultencoding needed
 import os
 from urllib.parse import quote_plus
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for, flash, current_app
 from flask_login import LoginManager
+from flask_wtf.csrf import CSRFProtect
 from sqlalchemy.engine.url import URL
+import click
 
 from app.route.user import user
 from app.api import api
@@ -60,6 +62,37 @@ login_manager.init_app(app)
 
 app.register_blueprint(user, url_prefix='/user')
 app.register_blueprint(api, url_prefix='/api')
+
+# D-10: Enable global CSRF protection on every state-changing POST.
+csrf = CSRFProtect(app)
+
+# D-11: CSRF failures (Flask-WTF raises 400) must NOT surface as the default
+# Flask 400 traceback — flash a friendly message and redirect back to the
+# originating page (or home if referrer is missing).
+@app.errorhandler(400)
+def handle_csrf_error(e):
+    flash('会话已过期，请重试')
+    return redirect(request.referrer or url_for('apple.home'))
+
+# D-17 / D-18: unified error page for 403 / 404 / 500. Tracebacks are still
+# written to stderr by Flask's default logger; they are not exposed to the
+# browser because the rendered template only consumes server-controlled
+# `error.code` / `error.name` / `error.description`.
+@app.errorhandler(403)
+@app.errorhandler(404)
+@app.errorhandler(500)
+def handle_error(e):
+    return render_template('error.html', error=e), e.code
+
+# D-16 / D-25: `flask init-db` is the production / container entrypoint for
+# bootstrapping the database. It calls the same `init_db()` function used
+# by the dev-only /api/reset route, so dev and prod share one seed path.
+@app.cli.command("init-db")
+def init_db_command():
+    """Drop all, recreate all, seed."""
+    from app.api.model import init_db
+    init_db()
+    print('Database initialized.')
 
 @login_manager.user_loader
 def load_user(id):
