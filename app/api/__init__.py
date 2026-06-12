@@ -79,16 +79,29 @@ def modify():
     return redirect(url_for('apple.home'))
 
 
-# @api.route('/commen', methods=['POST'])
-# @login_required
-# def commen():
-#     content = request.form.get('commentcontent')
-#     user_name = current_user
-#     lemma_id =
-#     comment = Comment(lemma_id=lemma_id, user_name=user_name, content=content)
-#     db.session.add(comment)
-#     db.session.commit()
-#     return flash('评论发表成功')
+@api.route('/comment', methods=['POST'])
+@login_required
+def comment():
+    lemma_id = request.form.get('lemma_id')
+    content = (request.form.get('content') or '').strip()
+    # CD-06: 1-320 字符校验,空内容(纯空格)拒收
+    if not content or len(content) > 320:
+        flash('评论内容不能为空且不超过 320 字符')
+        return redirect(request.referrer or url_for('apple.home'))
+    # CD-07: lemma_id 不存在 → flash 词条不存在 + 302 回 home
+    lemma = Lemma.query.get(lemma_id)
+    if lemma is None:
+        flash('词条不存在')
+        return redirect(url_for('apple.home'))
+    new_comment = Comment(
+        user_id=current_user.id,
+        lemma_id=lemma_id,
+        content=content,
+    )
+    db.session.add(new_comment)
+    db.session.commit()
+    flash('评论发表成功')
+    return redirect(request.referrer or url_for('apple.home'))
 
 @api.route('/reset')
 def reset():
