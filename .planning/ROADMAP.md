@@ -90,8 +90,12 @@
 6. The `Comment` table has a `user_id` foreign key to `User.id`; renaming a username does not orphan historical comments (comments still display the *current* username at read time, while `user_id` is the durable link)
 
 **Plans**: 2 plans
+**Wave 1**
 
 - [ ] 03-01-PLAN.md — Comment 数据模型重构 + 发布/列表接口 (COMMENT-01, COMMENT-02, COMMENT-03, COMMENT-06)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 03-02-PLAN.md — 作者删除 + 管理员删除 + 模板集成 (COMMENT-04, COMMENT-05, COMMENT-07, ROLE-02)
 
 ---
