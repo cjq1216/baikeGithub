@@ -1,12 +1,21 @@
 # Python 3 sources are UTF-8 by default; no setdefaultencoding needed
-# Windows fallback: PyMySQL shim makes `import MySQLdb` succeed so SQLAlchemy's
-# mysql+mysqlclient dialect works without compiling the C extension. If real
-# mysqlclient is installed (Linux/prod), it takes priority via the import order.
+# MySQL driver shim — real mysqlclient (Linux/prod) is preferred; on Windows
+# the C extension typically fails to build, so we fall back to PyMySQL which
+# registers itself as the MySQLdb module. SQLAlchemy 2.x uses the
+# `mysql+mysqldb` driver name (the `mysql+mysqlclient` alias was removed).
 try:
-    import pymysql  # type: ignore
-    pymysql.install_as_MySQLdb()
+    import MySQLdb  # noqa: F401  — real mysqlclient (Linux/prod)
 except ImportError:
-    pass
+    try:
+        import pymysql  # type: ignore
+        pymysql.install_as_MySQLdb()
+    except ImportError:
+        import sys
+        sys.stderr.write(
+            "FATAL: MySQL driver missing. Need mysqlclient (Linux) or PyMySQL (Windows).\n"
+            "       Run: pip install -r requirements.txt\n"
+        )
+        raise
 import os
 import re
 from urllib.parse import quote_plus
@@ -90,7 +99,7 @@ for _name in _required_db_vars:
     if _name not in os.environ:
         raise RuntimeError("Missing required env var: " + _name)
 app.config['SQLALCHEMY_DATABASE_URI'] = URL.create(
-    drivername='mysql+mysqlclient',
+    drivername='mysql+mysqldb',
     username=os.environ['DB_USER'],
     password=quote_plus(os.environ['DB_PASSWORD']),
     host=os.environ['DB_HOST'],
