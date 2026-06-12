@@ -2,26 +2,119 @@
 
 ## What This Is
 
-一个 Flask + MySQL 互动百科的现代化升级项目。原始代码是 2017 年软件架构课程大作业(641 宿舍),采用 Python 2 时代的写法(硬编码 MySQL 凭据、reload(sys)、wangEditor 2.x + jQuery 1.11),存在多个已知 bug 和安全/质量问题。本次升级目标是把它从"能跑通的课堂作业"转变为"可部署演示的产品雏形"——保留核心功能(用户注册登录、词条 CRUD、搜索、评论),通过修复 bug、迁移到 Python 3、现代化前后端、加 Docker 镜像,使另一个开发者仅凭 README 即可拉起并演示全部功能。
+一个 Flask + MySQL 互动百科的现代化升级项目,基于 2017 年软工大作业(641 宿舍)的 Python 2 时代代码,经 v1.0 升级后已成为"可部署演示的产品雏形"。v1.0 涵盖了 Python 3 迁移、bug 修复、安全加固、评论系统、前端现代化、Docker 化与 smoke 测试;陌生开发者 clone 仓库后,凭 README 即可拉起 Docker 容器、注册账号、创建词条、发布评论、并以管理员身份看到完整端到端流程。
 
 ## Core Value
 
-**一个陌生开发者能根据 README 启动 Docker 容器、注册账号、创建词条、发布评论、并以管理员身份看到完整端到端流程。**这是 v1 成功的最终验收标准——所有其他取舍都为这个目标服务。
+**一个陌生开发者能根据 README 启动 Docker 容器、注册账号、创建词条、发布评论、并以管理员身份看到完整端到端流程。**v1.0 已达成,v2 应在此基础上扩展。
+
+## Current State (after v1.0 SHIPPED 2026-06-12)
+
+- **5 phases, 12 plans, 46/46 v1 requirements complete**
+- 3 pytest tests passing(端到端 smoke + admin 双向权限)
+- 8/8 ROADMAP SUCCESS criteria verified
+- Verifier verdict: PASS (high confidence)
+- Code: ~813 Python + ~467 templates LOC
+- 4 acknowledged deviations, all acceptable(no docker daemon / Makefile Windows / conftest engine hack / LegacyAPIWarning)
+- See `.planning/milestones/v1.0-ROADMAP.md` for full archive
+- See `.planning/milestones/v1.0-REQUIREMENTS.md` for requirements traceability
 
 ## Requirements
 
-### Validated
+### Validated (v1.0 — SHIPPED 2026-06-12)
 
-(从现有代码推断已实现的能力)
+**Authentication & Authorization**(AUTH-01..06, INFRA-09)
+- ✓ User can register with username + password (hashed, never plaintext) — v1.0
+- ✓ User can log in and stay logged in across browser refresh — v1.0
+- ✓ User can log out from any page — v1.0
+- ✓ All forms require a valid CSRF token — v1.0
+- ✓ MySQL credentials and Flask secret_key come from env vars — v1.0
+- ✓ User has `is_admin` boolean; `flask promote-admin <username>` CLI — v1.0
 
-- ✓ **V-01**: 用户可以使用用户名+密码注册账号 — 现有 `app/api/__init__.py:regist` 路由
-- ✓ **V-02**: 用户可以登录并在会话中保持登录态 — Flask-Login `login_user`,session 持久化
-- ✓ **V-03**: 用户可以登出 — `app/api/__init__.py:logout` 路由
-- ✓ **V-04**: 登录用户可以新增词条(title + 富文本 content) — `app/api/__init__.py:add` + `add.html` wangEditor
-- ✓ **V-05**: 登录用户可以按标题模糊搜索词条 — `app/route/user.py:result` + `Lemma.query.filter(title.like(...))`
-- ✓ **V-06**: 用户可以查看词条详情页 — `app/route/user.py:detail` + `detail.html`
-- ✓ **V-07**: 用户可以从详情页跳到修改页 — `app/route/user.py:modify` + `modify.html` wangEditor
-- ✓ **V-08**: `/api/reset` 可以在首次启动时建表 + 灌种子数据 — `app/api/__init__.py:reset`
+**User Roles**(ROLE-01..03)
+- ✓ Admin can delete any lemma — v1.0
+- ✓ Admin can delete any comment — v1.0
+- ✓ Non-admin users see no admin-only controls — v1.0
+
+**Lemma Core Content**(LEMMA-01..08)
+- ✓ Logged-in user can create a lemma (title + rich-text content) — v1.0
+- ✓ Logged-in user can edit an existing lemma — v1.0
+- ✓ Logged-in user can search lemmas by partial title match — v1.0
+- ✓ User can view lemma detail page(title/content/timestamp/views/comments/backlinks) — v1.0
+- ✓ Detail page view increments view counter atomically(no race) — v1.0
+- ✓ Detail page shows "最后编辑于 YYYY-MM-DD HH:MM by <username>" — v1.0
+- ✓ Lemma content supports `[[词条名]]` wiki-link syntax — v1.0
+- ✓ Detail page shows "相关词条" (backlinks) section — v1.0
+
+**Comments**(COMMENT-01..07)
+- ✓ Logged-in user can post a comment via POST /api/comment — v1.0
+- ✓ Comment form hidden for anonymous; anonymous POSTs rejected — v1.0
+- ✓ Comments listed in reverse chronological order — v1.0
+- ✓ Author sees "删除" button on own comments — v1.0
+- ✓ Non-authors see no delete button; non-author POST returns 403 — v1.0
+- ✓ Comment has user_id FK to User (no orphan on rename) — v1.0
+- ✓ Comment deletion is hard-delete — v1.0
+
+**Frontend Modernization**(FRONT-01..06)
+- ✓ No jQuery in templates or assets — v1.0
+- ✓ HTMX (latest stable) used for partial updates — v1.0
+- ✓ Bootstrap 3 removed; Pico.css provides base styling — v1.0
+- ✓ wangEditor 2.x replaced with Quill 2.x (local vendor) — v1.0
+- ✓ All 7 templates redesigned for visual consistency + accessibility — v1.0
+- ✓ Wiki-link parsing at write-time (bleach) + render-time (Jinja filter) — v1.0
+
+**Infrastructure**(INFRA-01..11)
+- ✓ App runs on Python 3.11+; no reload(sys) — v1.0
+- ✓ mysql-python replaced with mysqlclient — v1.0
+- ✓ Single Flask app construction site in app/__init__.py — v1.0
+- ✓ __tablename__ typo fixed in all 3 models — v1.0
+- ✓ /api/reset guarded in production; `flask init-db` CLI exposed — v1.0
+- ✓ Unified 404/500 error pages — v1.0
+- ✓ Dockerfile multi-stage python:3.11-slim + gunicorn :8000 — v1.0
+- ✓ Container entrypoint: flask init-db --if-empty (idempotent) + gunicorn — v1.0
+- ✓ All runtime config from env vars (DB_HOST/PORT/USER/PASSWORD/NAME + FLASK_SECRET) — v1.0
+- ✓ README "Production deploy" section with full third-party-followable steps — v1.0
+- ✓ .dockerignore keeps build context < 50MB — v1.0
+
+**Tests & Acceptance**(TEST-01..05)
+- ✓ pytest + pytest-flask installed; tests/ directory exists — v1.0
+- ✓ test_smoke.py runs end-to-end single test (9 steps, each asserted) — v1.0
+- ✓ test_admin.py verifies admin delete + non-admin 403 — v1.0
+- ✓ make test / pytest passes on fresh venv; README documents how — v1.0
+- ✓ Third-party can clone + docker run + nginx reverse proxy + smoke flow — v1.0
+
+### Active (V2 backlog, see `.planning/REQUIREMENTS.md` § v2 Requirements if created)
+
+(Empty for now — V2 planning pending `/gsd-new-milestone`)
+
+### Out of Scope (reaffirmed v1.0)
+
+| Feature | Reason | Status |
+|---------|--------|--------|
+| OAuth / 第三方登录 | 用户名+密码 + admin 标志已满足产品雏形 | ✓ Maintained v1.0 |
+| 2FA / TOTP | 课堂作业环境不需要 | ✓ Maintained v1.0 |
+| 邮件验证 / 找回密码 | 需要 SMTP 凭据,产品雏形不引入外部依赖 | ✓ Maintained v1.0 |
+| 实时聊天 / WebSocket | 与"词条 + 评论"核心场景无关 | ✓ Maintained v1.0 |
+| 词条版本历史 / diff | 复杂,需要新表和 UI | ✓ Maintained v1.0 |
+| 全文搜索 (Elasticsearch) | SQL LIKE 对小数据集够用 | ✓ Maintained v1.0 |
+| K8s 部署 / Helm chart | 假设生产用外部编排 | ✓ Maintained v1.0 |
+| CI/CD pipeline | smoke 测试本地 make test 跑过即可 | ✓ Maintained v1.0 |
+| 移动端 App / PWA | 响应式 Web 已足够 | ✓ Maintained v1.0 |
+| 多语言 i18n | 单一中文界面 | ✓ Maintained v1.0 |
+| React/Vue 等 SPA | 与"无重前端"诉求冲突 | ✓ Maintained v1.0 |
+| 编辑者 / 版主等中间角色 | v1 只用 regular + admin 二元角色 | ✓ Maintained v1.0 |
+| 词条保护 / 锁定 | 任何登录用户都可编辑(管理员可删除兜底) | ✓ Maintained v1.0 |
+
+## Next Milestone Goals (V2 candidates)
+
+V2 候选需求已在 `.planning/REQUIREMENTS.md` § v2 Requirements 中跟踪(19 条:V2-AUTH-01..04 / V2-CONTENT-01..04 / V2-COMMENT-01..02 / V2-OPS-01..03 / V2-FRONT-01..03 / V2-AUTH-05 / V2-OPS-04)。V2 milestone 启动前需 `/gsd-new-milestone` 走 questioning → research → requirements → roadmap 流程。
+
+**特别推荐 V2 优先项**:
+1. **V2-OPS-01** GitHub Actions CI(smoke tests 自动跑) — 解决"dev 端无 docker daemon,实际验证需 CI" 的痛点
+2. **V2-OPS-04** `/healthz` endpoint + Docker HEALTHCHECK — 解决"运维通过 gunicorn 启动日志判断就绪" 的人肉操作
+3. **V2-AUTH-01** Email 验证 — 提升用户信任
+4. **V2-CONTENT-01** Lemma revision history + diff viewer — 知识库型产品的强需求
+5. **V2-FRONT-03** Real-time updates via SSE/WebSocket — 让评论/浏览数实时刷新
 
 ### Active
 
@@ -145,10 +238,10 @@
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| 保留 Flask 而非换栈 | 升级目标不是重写,是把现有功能做扎实;换框架会让"修复 5 个 bug"变成"重写整个项目" | — Pending |
-| 二元角色(regular + admin) 而非三角色 | 实际场景(同学/作业环境)只需要"普通用户 + 管理员",编辑者角色增加复杂度但价值有限 | — Pending |
-| HTMX + Pico.css 而非 React | "现代化前端"的诉求是"摆脱 jQuery + Bootstrap 3",不一定要走 SPA;HTMX 是 server-rendered 模式下的最自然选择 | — Pending |
-| 词条间 wiki 链接采用 `[[标题]]` 语法 | Wikipedia / MediaWiki 既成事实,用户已熟悉,后端正则解析成本低 | — Pending |
+| 保留 Flask 而非换栈 | 升级目标不是重写,是把现有功能做扎实;换框架会让"修复 5 个 bug"变成"重写整个项目" | ✓ Good v1.0 |
+| 二元角色(regular + admin) 而非三角色 | 实际场景(同学/作业环境)只需要"普通用户 + 管理员",编辑者角色增加复杂度但价值有限 | ✓ Good v1.0 |
+| HTMX + Pico.css 而非 React | "现代化前端"的诉求是"摆脱 jQuery + Bootstrap 3",不一定要走 SPA;HTMX 是 server-rendered 模式下的最自然选择 | ✓ Good v1.0 |
+| 词条间 wiki 链接采用 `[[标题]]` 语法 | Wikipedia / MediaWiki 既成事实,用户已熟悉,后端正则解析成本低 | ✓ Good v1.0 |
 | 凭据/secret 走环境变量而非配置文件 | 容器化部署下,环境变量是十二要素应用标准做法;`config.ini` 仅留作 uwsgi 历史兼容 | — Pending |
 | 评论不实装编辑(仅发布 + 作者删除) | 用户答复"基础 + 列表 + 作者可删";评论可编辑增加 UI 复杂度,对雏形价值低 | — Pending |
 | Docker 不打包 nginx / MySQL | 用户答复"nginx 和数据库是外部的";降低本项目维护成本 | — Pending |
