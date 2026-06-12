@@ -2,6 +2,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.orm import backref
 import datetime
 
 db = SQLAlchemy()
@@ -13,6 +14,11 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(30), unique=True)
     password = db.Column(db.String(255))
     is_admin = db.Column(db.Boolean, default=False)
+    comments = db.relationship(
+        'Comment',
+        backref=backref('author', lazy='joined'),
+        cascade='all, delete-orphan',
+    )
 
     def __str__(self):
         return '用户<id:%s, 姓名:%s>' % (self.id, self.name)
@@ -28,7 +34,12 @@ class Lemma(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(40))
     content = db.Column(db.Text)
-    comments = db.relationship('Comment', backref='lemmas', lazy='dynamic')
+    comments = db.relationship(
+        'Comment',
+        backref='lemmas',
+        lazy='dynamic',
+        cascade='all, delete-orphan',
+    )
 
     def __str__(self):
         return '词条<title:%s, contet:%s>' % (self.title, self.content)
@@ -41,21 +52,19 @@ class Comment(db.Model):
 
     __tablename__= 'comment'
     id = db.Column(db.Integer, primary_key=True)
-    #user_name = db.Column(db.String(30), db.ForeignKey('User.name'))
-    user_name = db.Column(db.String(30))
-    lemma_id = db.Column(db.Integer, db.ForeignKey('lemma.id'))
-    #title = db.Column(db.String(40))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    lemma_id = db.Column(db.Integer, db.ForeignKey('lemma.id'), nullable=False)
     content = db.Column(db.String(320))
     time = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __str__(self):
-        return '评论<%s>' % (self.title)
+        snippet = (self.content or '')[:20]
+        return '评论<%s>' % (snippet)
 
-    def __init__(self, user_name = None, lemma_title = None, content = None ):
-        self.user_name = current_user
-        self.lemma_title = lemma_title
+    def __init__(self, user_id=None, lemma_id=None, content=None):
+        self.user_id = user_id
+        self.lemma_id = lemma_id
         self.content = content
-        self.time = datetime.now()
 
 
 def init_db():
