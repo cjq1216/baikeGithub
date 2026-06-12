@@ -5,3 +5,7 @@
 venv/
 ENV/
 /.claude/
+
+# local env files (secrets)
+.env
+.envrc

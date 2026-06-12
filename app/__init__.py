@@ -1,4 +1,12 @@
 # Python 3 sources are UTF-8 by default; no setdefaultencoding needed
+# Windows fallback: PyMySQL shim makes `import MySQLdb` succeed so SQLAlchemy's
+# mysql+mysqlclient dialect works without compiling the C extension. If real
+# mysqlclient is installed (Linux/prod), it takes priority via the import order.
+try:
+    import pymysql  # type: ignore
+    pymysql.install_as_MySQLdb()
+except ImportError:
+    pass
 import os
 import re
 from urllib.parse import quote_plus
