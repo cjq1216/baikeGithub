@@ -103,6 +103,21 @@ def comment():
     flash('评论发表成功')
     return redirect(request.referrer or url_for('apple.home'))
 
+@api.route('/comment/<int:comment_id>/delete', methods=['POST'])
+@login_required
+def delete_comment(comment_id):
+    comment = Comment.query.get(comment_id)
+    if comment is None:
+        flash('评论不存在')
+        return redirect(request.referrer or url_for('apple.home'))
+    # D-27 修正:仅作者本人可删;非作者 → 403 走 Phase 2 D-17 统一错误页
+    if comment.user_id != current_user.id:
+        abort(403)
+    db.session.delete(comment)
+    db.session.commit()
+    flash('评论已删除')
+    return redirect(request.referrer or url_for('apple.home'))
+
 @api.route('/reset')
 def reset():
     # D-14: dev-only convenience. In non-debug mode the route is silently
