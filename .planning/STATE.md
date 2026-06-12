@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready to execute
-last_updated: "2026-06-12T01:57:05.703Z"
+status: Phase 3 complete
+last_updated: "2026-06-12T10:35:00.000Z"
 progress:
   total_phases: 5
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 12
-  completed_plans: 5
-  percent: 40
+  completed_plans: 7
+  percent: 58
 ---
 
 # State: 互动百科 产品化升级
@@ -28,11 +28,10 @@ progress:
 ## Current Position
 
 Phase: 3
-Plan: 2 plans ready to execute
 **Phase**: 3 — Comment System
-**Plan**: 3.1 — Comment 数据模型重构 + 发布/列表接口 (next to execute)
-**Status**: Ready to execute
-**Progress bar**: `[████░░░░░░░░░░░░░░░░]` 2/5 phases complete (5/12 plans done)
+**Status**: ✅ Complete (Plans 3.1 + 3.2 delivered, all 7 SUCCESS criteria statically verified)
+**Progress bar**: `[██████████░░░░░░░░░░]` 3/5 phases complete (7/12 plans done)
+**Next action**: `/gsd-execute-phase 4` — Frontend Modernization & Product Features
 
 ## Performance Metrics
 
@@ -40,8 +39,8 @@ Plan: 2 plans ready to execute
 |--------|-------|
 | Total phases | 5 |
 | Total plans | 12 |
-| Phases complete | 0 |
-| Plans complete | 0 |
+| Phases complete | 3 (Phase 1, 2, 3) |
+| Plans complete | 7 (1.1, 1.2, 2.1, 2.2, 2.3, 3.1, 3.2) |
 | Avg plans/phase | 2.4 |
 | v1 requirements | 46 |
 | Mapped requirements | 46 |
@@ -87,14 +86,36 @@ Plan: 2 plans ready to execute
 
 | # | Phase | Plans | Requirements | Status |
 |---|-------|-------|--------------|--------|
-| 1 | Foundation (Python 3 + Bug Fixes) | 2 | INFRA-01..04 | Not started |
-| 2 | Security & Auth Hardening | 3 | AUTH-01..06, ROLE-01..03, INFRA-05, INFRA-06, INFRA-09 | Not started |
-| 3 | Comment System | 2 | COMMENT-01..07, ROLE-02 | Ready to execute |
+| 1 | Foundation (Python 3 + Bug Fixes) | 2 | INFRA-01..04 | ✅ Complete |
+| 2 | Security & Auth Hardening | 3 | AUTH-01..06, ROLE-01..03, INFRA-05, INFRA-06, INFRA-09 | ✅ Complete |
+| 3 | Comment System | 2 | COMMENT-01..07, ROLE-02 | ✅ Complete (2026-06-12) |
 | 4 | Frontend Modernization & Product Features | 3 | FRONT-01..06, LEMMA-01..08 | Not started |
 | 5 | Docker Deployment, Tests & Acceptance | 2 | INFRA-07, INFRA-08, INFRA-10, INFRA-11, TEST-01..05 | Not started |
 
+## Phase 3 Delivery
+
+**Commits** (6 atomic, sequential):
+- `945128b` — feat(03-01/T1): comment schema refactor with user_id FK + cascade
+- `9a2499c` — feat(03-01/T2): implement POST /api/comment with login + validation
+- `fba131e` — feat(03-01/T3): implement author-only POST /api/comment/<id>/delete
+- `fd6605e` — feat(03-01/T4): /user/detail queries comments ordered by time desc
+- `59b4148` — feat(03-02/T1): add admin POST /api/admin/comment/<id>/delete route
+- `bb3991b` — feat(03-02/T2): detail.html — inline comment form, delete buttons, author/time fields
+
+**SUCCESS criteria coverage** (statically verified, see `.planning/phases/03-comment-system/03-VERIFICATION.md`):
+- SC-1 登录用户发布评论 → `/api/comment` POST route (9a2499c) ✅
+- SC-2 匿名用户不渲染发布 form + 匿名 POST 403 → `{% if current_user.is_authenticated %}` 包裹 (bb3991b) + `@login_required` (9a2499c) ✅
+- SC-3 评论按 time DESC 倒序 → `Comment.time.desc()` (fd6605e) ✅
+- SC-4 作者删除按钮 + confirm → `url_for('api.delete_comment')` + `onsubmit` confirm (bb3991b) ✅
+- SC-5 admin 删除按钮 + 非作者 403 → `url_for('admin.delete_comment')` + `@admin_required` (59b4148, bb3991b) + `comment.user_id != current_user.id` (fba131e) ✅
+- SC-6 评论作者字段名随 User.name 变化 → `comment.author.name` 走 `backref=backref('author', lazy='joined')` (945128b, bb3991b) ✅
+- SC-7 硬删除 → `db.session.delete + commit` 双端点 (fba131e, 59b4148) ✅
+
+**Deferred to Phase 5 verification** (needs live MySQL + Flask process):
+- V3-V7 of Plan 3.1 + V2-V8 of Plan 3.2 (curl / browser end-to-end)
+
 ## Session Continuity
 
-- Last session: 2026-06-12 — Phase 3 planned, 2 plans ready to execute
-- Next action: `/gsd-execute-phase 3` (execute Comment System phase)
-- Resume point: Phase 3, Plan 3.1 — Comment 数据模型重构 + 发布/列表接口
+- Last session: 2026-06-12 — Phase 3 executed, both plans committed, all 7 SCs statically verified
+- Next action: `/gsd-execute-phase 4` (Frontend Modernization & Product Features)
+- Resume point: Phase 4 — HTMX + Pico.css migration, wiki links, view_count, related lemmas
