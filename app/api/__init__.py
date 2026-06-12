@@ -1,4 +1,5 @@
 # Python 3 sources are UTF-8 by default; no setdefaultencoding needed
+import bleach
 from flask import Blueprint, request, abort, redirect, url_for, flash, jsonify, current_app
 from flask_login import login_user, login_required,logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -8,6 +9,15 @@ api = Blueprint(
         'api',
         __name__,
 )
+
+# D-44: bleach 白名单 (Plan 4.1 决定)
+# - tags: 用户富文本允许的标签 (p / b / i / u / strong / em / a / 列表 / 标题 / br / 引用 / 代码)
+# - attributes: 仅 a 标签允许 href 属性 (禁止 onclick 等事件)
+# - protocols: 仅 http/https (禁止 javascript: / data: 等 XSS vector)
+ALLOWED_TAGS = ['p', 'b', 'i', 'u', 'strong', 'em', 'a', 'ul', 'ol', 'li',
+                'h1', 'h2', 'h3', 'br', 'blockquote', 'pre', 'code']
+ALLOWED_ATTRS = {'a': ['href']}
+ALLOWED_PROTOCOLS = ['http', 'https']
 
 @api.route('/regist', methods=['POST'])
 def registBusiness():
@@ -54,7 +64,15 @@ def add():
     nowTitle = Lemma.query.filter_by(title=title).first()
     if not nowTitle:
         title = request.form.get('title')
-        content = request.form.get('content')
+        # D-44: bleach 白名单过滤 Quill 输出的 HTML,防 XSS
+        content = request.form.get('content') or ''
+        content = bleach.clean(
+            content,
+            tags=ALLOWED_TAGS,
+            attributes=ALLOWED_ATTRS,
+            protocols=ALLOWED_PROTOCOLS,
+            strip=True,
+        )
         lemma = Lemma(title=title, content=content)
         db.session.add(lemma)
         db.session.commit()
@@ -68,7 +86,15 @@ def add():
 @login_required
 def modify():
     newTitle = request.form.get('newTitle')
-    newContent = request.form.get('newContent')
+    # D-44: bleach 白名单过滤修改后的 HTML,防 XSS
+    newContent = request.form.get('newContent') or ''
+    newContent = bleach.clean(
+        newContent,
+        tags=ALLOWED_TAGS,
+        attributes=ALLOWED_ATTRS,
+        protocols=ALLOWED_PROTOCOLS,
+        strip=True,
+    )
     lemma = Lemma.query.filter_by(title=newTitle).first()
     if lemma is None:
         flash('修改失败！词条不存在')
