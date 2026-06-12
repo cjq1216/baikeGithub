@@ -68,8 +68,6 @@
         <button class="btn btn-lg btn-primary btn-block" type="submit" id="confirmModify">确认修改</button>
         <button class="btn btn-lg btn-primary btn-block" type="button" id="cancelModify">放弃修改</button>
         <br>
-        <button class="btn btn-lg btn-primary btn-block" type="button" id="sendComment">发布评论</button>
-        <br>
       </div>
       {% endif %}
     </form>
@@ -81,18 +79,41 @@
     </form>
     {% endif %}
 
+    {% if current_user.is_authenticated %}
+    <div class="comment-form-container">
+        <form action="/api/comment" method="post" class="form-signin">
+            <input type="hidden" name="lemma_id" value="{{ fullcontent[0].id }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <textarea name="content" maxlength="320" required class="form-control" rows="3" placeholder="您说～"></textarea>
+            <button class="btn btn-primary" type="submit">发布评论</button>
+        </form>
+    </div>
+    {% endif %}
+
       <div class= "comment-container" id="comment">
         {% for comment in comments %}
         <div class= "single-comment" id="singleComment">
           <div class="line"  style="width:100%;margin: 1px;height:2%;border-top:1px solid #ddd"></div>
           <div class= "comment-user">
-            <h4>{{ comment.name }}</h4>
+            <h4>{{ comment.author.name }}</h4>
           </div>
           <div class="comment-text">
             <p>{{ comment.content }}</p>
           </div>
           <div class="comment-footer">
-            <p>{{ comment.time }}</p>
+            <p>{{ comment.time.strftime('%Y-%m-%d %H:%M') }}</p>
+            {% if current_user.is_authenticated and current_user.is_admin %}
+            <form action="{{ url_for('admin.delete_comment', comment_id=comment.id) }}" method="post" style="display:inline" onsubmit="return confirm('确定删除这条评论?');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-xs btn-danger" type="submit">删除</button>
+            </form>
+            {% endif %}
+            {% if current_user.is_authenticated and comment.user_id == current_user.id %}
+            <form action="{{ url_for('api.delete_comment', comment_id=comment.id) }}" method="post" style="display:inline" onsubmit="return confirm('确定删除这条评论?');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-xs btn-danger" type="submit">删除</button>
+            </form>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -104,31 +125,6 @@
       <p>641大百科</p>
       <p><a href="#">Back to top</a></p>
     </div>
-
-    <div style="display:none;top:15%;left:40%;position:absolute;width:600px; height:25%; background-color:#ccc; z-index:999" id="out">
-        <div class="container">
-            <div class="row">
-                <div class="col-xs-12" style="padding-top:30px;">
-                    <form class="form-signin" role="form" action="/api/commen", method="post">
-                        <input style="width:570px" type="text" class="form-control" name="commentcontent" placeholder="您说～" required autofocus>
-                        <br />
-                        {% with messages = get_flashed_messages() %}
-                        {% if messages %}
-                        <ul class=flashes>
-                            {% for message in messages %}
-                            <li class="error">{{ message }}</li>
-                            {% endfor %}
-                        </ul>
-                        {% endif %}
-                        {% endwith %}
-                        <button style="width:100px" class="btn btn-lg btn-primary btn-block" type="submit" id="fabu">发布</button>
-                        <button style="width:100px" class="btn btn-lg btn-primary btn-block" type="button" id="back">返回</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -146,13 +142,6 @@
       editor.disable();
       $('#confirmModify').hide();
       $('#cancelModify').hide();
-      $("#back").click(function(){
-          $("#out").hide();
-          return false;
-      })
-      $("#sendComment").click(function(){
-          $("#out").show();
-      })
       $("#modify").click(function(){
           editor.enable();
           $('#modify').hide();
