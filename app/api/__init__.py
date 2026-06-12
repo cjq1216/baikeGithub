@@ -1,6 +1,6 @@
 # Python 3 sources are UTF-8 by default; no setdefaultencoding needed
 import bleach
-from flask import Blueprint, request, abort, redirect, url_for, flash, jsonify, current_app
+from flask import Blueprint, request, abort, redirect, url_for, flash, jsonify, current_app, make_response
 from flask_login import login_user, login_required,logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.api.model import User, Lemma, Comment, db
@@ -47,7 +47,10 @@ def loginBusiness():
     nowUser = User.query.filter_by(name=name).first()
     if nowUser and check_password_hash(nowUser.password, password):
         login_user(nowUser)
-        return redirect(url_for('apple.home'))
+        # D-47: 登录成功 → HX-Trigger nav-refresh 让 base.html nav 区域自动重渲染
+        resp = make_response(redirect(url_for('apple.home')))
+        resp.headers['HX-Trigger'] = 'nav-refresh'
+        return resp
     flash('账号或密码错误')
     return redirect(url_for('apple.login'))
 
@@ -55,7 +58,10 @@ def loginBusiness():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('apple.home'))
+    # D-47: 登出成功 → HX-Trigger nav-refresh 让 base.html nav 区域自动重渲染
+    resp = make_response(redirect(url_for('apple.home')))
+    resp.headers['HX-Trigger'] = 'nav-refresh'
+    return resp
 
 @api.route('/add', methods=['POST'])
 @login_required
