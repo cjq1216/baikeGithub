@@ -1,6 +1,7 @@
 # Python 3 sources are UTF-8 by default; no setdefaultencoding needed
 from flask import Blueprint, request, abort, redirect, url_for, flash, jsonify
 from flask_login import login_user, login_required,logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 from app.api.model import User, Lemma, Comment, db
 
 api = Blueprint(
@@ -11,11 +12,16 @@ api = Blueprint(
 @api.route('/regist', methods=['POST'])
 def registBusiness():
     name = request.form.get('name')
+    password = request.form.get('password')
+    # D-04: 长度校验放在任何 DB 操作之前,即使名字已存在/不存在都先拒绝。
+    # seed user 'a' (1 字符) 由 Plan 2.2 的 init_db() 直接走 User() 构造器创建,
+    # 不走此 HTTP 路径,因此 6-30 字符规则不会阻塞 seed 账号。
+    if len(name) < 6 or len(name) > 30 or len(password) < 6 or len(password) > 30:
+        flash('用户名和密码长度需在 6-30 字符之间')
+        return redirect(url_for('apple.regist'))
     nowUser = User.query.filter_by(name=name).first()
     if not nowUser:
-        uesrname = request.form.get('name')
-        password = request.form.get('password')
-        user = User(name=name, password=password)
+        user = User(name=name, password=generate_password_hash(password))
         db.session.add(user)
         db.session.commit()
         login_user(user)
@@ -28,11 +34,11 @@ def registBusiness():
 def loginBusiness():
     name = request.form.get('name')
     password = request.form.get('password')
-    nowUser = User.query.filter_by(name=name, password=password).first()
-    if nowUser:
+    nowUser = User.query.filter_by(name=name).first()
+    if nowUser and check_password_hash(nowUser.password, password):
         login_user(nowUser)
         return redirect(url_for('apple.home'))
-    flash('登录失败，请检查账号和密码！')
+    flash('账号或密码错误')
     return redirect(url_for('apple.login'))
 
 @api.route('/logout', methods=['GET'])

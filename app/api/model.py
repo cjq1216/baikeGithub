@@ -1,6 +1,7 @@
 # Python 3 sources are UTF-8 by default; no setdefaultencoding needed
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 
 db = SQLAlchemy()
@@ -10,14 +11,16 @@ class User(db.Model, UserMixin):
     __tablename__= 'user'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), unique=True)
-    password = db.Column(db.String(40))
+    password = db.Column(db.String(255))
+    is_admin = db.Column(db.Boolean, default=False)
 
     def __str__(self):
         return '用户<id:%s, 姓名:%s>' % (self.id, self.name)
 
-    def __init__(self, name = None, password = None ):
+    def __init__(self, name = None, password = None, is_admin = None ):
         self.name = name
         self.password = password
+        self.is_admin = is_admin if is_admin is not None else False
 
 class Lemma(db.Model):
 
