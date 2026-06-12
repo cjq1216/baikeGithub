@@ -1,16 +1,18 @@
 # Python 3 sources are UTF-8 by default; no setdefaultencoding needed
 import os
+import re
 from urllib.parse import quote_plus
 from flask import Flask, render_template, request, redirect, url_for, flash, current_app
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
+from markupsafe import Markup, escape
 from sqlalchemy.engine.url import URL
 import click
 
 from app.route.user import user
 from app.api import api
 from app.api.admin import admin
-from app.api.model import db, User
+from app.api.model import db, User, Lemma
 import sys
 
 
@@ -43,6 +45,36 @@ def _resolve_flask_secret():
 
 app = Flask(__name__)
 app.secret_key = _resolve_flask_secret()
+
+
+# D-50: Jinja2 wikilink filter 解析 [[xxx]] — 存在 → 蓝链接,不存在 → 红虚线 + "(创建此词条)"
+@app.template_filter('wikilink')
+def wikilink_filter(content):
+    if not content:
+        return content
+
+    def render_wikilink(match):
+        title = match.group(1).strip()
+        if not title:
+            return match.group(0)
+        # D-51: 标题转义防 XSS(markupsafe.escape 转 < > & 等)
+        safe_title = escape(title)
+        target = Lemma.query.filter_by(title=title).first()
+        if target is not None:
+            return f'<a href="/user/detail?title={title}">{safe_title}</a>'
+        else:
+            return (
+                f'<a class="wikilink-missing" '
+                f'style="text-decoration:underline dashed red;'
+                f'color:var(--pico-color-red-500);" '
+                f'href="/user/add?title={title}">'
+                f'{safe_title} (创建此词条)→</a>'
+            )
+
+    # D-51: 非贪婪 + 不跨行
+    return Markup(re.sub(r'\[\[([^\[\]\n]+?)\]\]', render_wikilink, content))
+
+
 # D-05/D-07: DB_* are required; missing any one is a hard fail (no silent
 # default back to the old hardcoded values).
 _required_db_vars = ('DB_HOST', 'DB_PORT', 'DB_USER', 'DB_PASSWORD', 'DB_NAME')
