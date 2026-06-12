@@ -34,6 +34,8 @@ class Lemma(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(40))
     content = db.Column(db.Text)
+    updated_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow, nullable=False)
+    view_count = db.Column(db.Integer, default=0, nullable=False, server_default='0')
     comments = db.relationship(
         'Comment',
         backref='lemmas',
