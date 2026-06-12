@@ -18,6 +18,7 @@
 <body>
 	<div class="container">
       <form class="form-signin" role="form" action="/api/regist" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <h2 class="form-signin-heading">新用户注册</h2>
           {% with messages = get_flashed_messages() %}
           {% if messages %}

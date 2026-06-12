@@ -38,6 +38,7 @@
 
       <div class="search">
         <form action="/user/search" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <input type="text" class="col-sm-8 form-control searchtext"id="searchtext" name="searchtext" required></input>
           <button class="btn btn-sm btn-primary btn-block" type="submit" style="width:25%;height:20%;">search</button>
         </form>

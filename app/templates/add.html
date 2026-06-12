@@ -40,6 +40,7 @@
 
     <div class="container">
       <form role="form" action="/api/add" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="blog-header">
           <textarea rows="1" class="form-control" name="title" placeholder="title" required></textarea><br>
           <textarea rows="5" id = "content0" class="form-control" name="content" placeholder="content" style="height:400px;max-height:500px;" required></textarea>
