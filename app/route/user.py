@@ -43,7 +43,9 @@ def detail():
     if not fullcontent:
         flash('所查词条不存在')
         return redirect(url_for('apple.home'))
-    return render_template('detail.html', fullcontent=fullcontent)
+    # D-39: 传 comments 给模板;按时间倒序(最新评论在前)
+    comments = Comment.query.filter_by(lemma_id=fullcontent[0].id).order_by(Comment.time.desc()).all()
+    return render_template('detail.html', fullcontent=fullcontent, comments=comments)
 
 @user.route('/modify')
 @login_required
