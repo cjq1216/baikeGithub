@@ -9,18 +9,18 @@
 
 ### Authentication & Authorization
 
-- [ ] **AUTH-01**: User can register with username + password (password is stored hashed, never plaintext)
-- [ ] **AUTH-02**: User can log in with username + password and stay logged in across browser refresh
-- [ ] **AUTH-03**: User can log out from any page
-- [ ] **AUTH-04**: All forms require a valid CSRF token; submissions without one are rejected
-- [ ] **AUTH-05**: MySQL connection credentials and Flask `secret_key` come from environment variables, not from source code
-- [ ] **AUTH-06**: `User` table has an `is_admin` boolean field; a `flask promote-admin <username>` CLI command flips it
+- [x] **AUTH-01**: User can register with username + password (password is stored hashed, never plaintext)
+- [x] **AUTH-02**: User can log in with username + password and stay logged in across browser refresh
+- [x] **AUTH-03**: User can log out from any page
+- [x] **AUTH-04**: All forms require a valid CSRF token; submissions without one are rejected
+- [x] **AUTH-05**: MySQL connection credentials and Flask `secret_key` come from environment variables, not from source code
+- [x] **AUTH-06**: `User` table has an `is_admin` boolean field; a `flask promote-admin <username>` CLI command flips it
 
 ### User Roles
 
-- [ ] **ROLE-01**: Admin can delete any lemma from the detail page
+- [x] **ROLE-01**: Admin can delete any lemma from the detail page
 - [ ] **ROLE-02**: Admin can delete any comment from the detail page *(deferred to Phase 3 — comment system not yet built; admin blueprint + `admin_required` decorator are in Phase 2 as scaffolding)*
-- [ ] **ROLE-03**: Non-admin users see no admin-only controls; admin controls are visible only to admins
+- [x] **ROLE-03**: Non-admin users see no admin-only controls; admin controls are visible only to admins
 
 ### Lemma (Core Content)
 
@@ -58,11 +58,11 @@
 - [x] **INFRA-02**: `mysql-python` (MySQLdb) is replaced with `mysqlclient`; `requirements.txt` is updated and the venv can be re-built from scratch
 - [x] **INFRA-03**: `app/api/model.py` no longer creates a duplicate `Flask(__name__)` instance; only `app/__init__.py` constructs the app
 - [x] **INFRA-04**: The `__tablenanme__` typo is fixed in all three models (`User`, `Lemma`, `Comment`); table names are explicit
-- [ ] **INFRA-05**: `/api/reset` is no longer exposed in production; it is either guarded by `if not app.debug: abort(404)` or replaced with a `flask init-db` CLI command
-- [ ] **INFRA-06**: A single 404 handler and a single 500 handler render a unified Jinja error page (no default Flask debug page in production)
+- [x] **INFRA-05**: `/api/reset` is no longer exposed in production; it is either guarded by `if not app.debug: abort(404)` or replaced with a `flask init-db` CLI command
+- [x] **INFRA-06**: A single 404 handler and a single 500 handler render a unified Jinja error page (no default Flask debug page in production)
 - [ ] **INFRA-07**: A `Dockerfile` (multi-stage, `python:3.11-slim` base) builds a runnable image that starts the app via gunicorn on port 8000
 - [ ] **INFRA-08**: Container entrypoint runs `flask init-db` (idempotent) on first start, then starts gunicorn; the public `/api/reset` URL is removed from the running image
-- [ ] **INFRA-09**: All runtime configuration is read from env vars: `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `FLASK_SECRET`; no defaults fall back to `root`/`123456`
+- [x] **INFRA-09**: All runtime configuration is read from env vars: `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `FLASK_SECRET`; no defaults fall back to `root`/`123456`
 - [ ] **INFRA-10**: README contains a "Production deploy" section: build image, `docker run -e DB_HOST=… -e …`, place behind an external nginx reverse proxy, point at an external MySQL — full steps a third party can follow
 - [ ] **INFRA-11**: `.dockerignore` keeps build context under 50 MB (excludes `.venv/`, `.git/`, `__pycache__/`, `*.pyc`, etc.)
 
@@ -121,15 +121,15 @@ Explicitly excluded. Documented to prevent scope creep.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 2 | Pending |
-| AUTH-02 | Phase 2 | Pending |
-| AUTH-03 | Phase 2 | Pending |
-| AUTH-04 | Phase 2 | Pending |
-| AUTH-05 | Phase 2 | Pending |
-| AUTH-06 | Phase 2 | Pending |
-| ROLE-01 | Phase 2 | Pending |
+| AUTH-01 | Phase 2 | Complete |
+| AUTH-02 | Phase 2 | Complete |
+| AUTH-03 | Phase 2 | Complete |
+| AUTH-04 | Phase 2 | Complete |
+| AUTH-05 | Phase 2 | Complete |
+| AUTH-06 | Phase 2 | Complete |
+| ROLE-01 | Phase 2 | Complete |
 | ROLE-02 | Phase 3 | Pending (deferred from Phase 2 per `02-CONTEXT.md` D-20..D-25; admin scaffolding ships in Phase 2) |
-| ROLE-03 | Phase 2 | Pending |
+| ROLE-03 | Phase 2 | Complete |
 | LEMMA-01 | Phase 4 | Pending |
 | LEMMA-02 | Phase 4 | Pending |
 | LEMMA-03 | Phase 4 | Pending |
@@ -155,11 +155,11 @@ Explicitly excluded. Documented to prevent scope creep.
 | INFRA-02 | Phase 1 | Complete |
 | INFRA-03 | Phase 1 | Complete |
 | INFRA-04 | Phase 1 | Complete |
-| INFRA-05 | Phase 2 | Pending |
-| INFRA-06 | Phase 2 | Pending |
+| INFRA-05 | Phase 2 | Complete |
+| INFRA-06 | Phase 2 | Complete |
 | INFRA-07 | Phase 5 | Pending |
 | INFRA-08 | Phase 5 | Pending |
-| INFRA-09 | Phase 2 | Pending |
+| INFRA-09 | Phase 2 | Complete |
 | INFRA-10 | Phase 5 | Pending |
 | INFRA-11 | Phase 5 | Pending |
 | TEST-01 | Phase 5 | Pending |
