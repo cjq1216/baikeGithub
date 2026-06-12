@@ -25,7 +25,9 @@ def regist():
 @user.route('/add')
 @login_required
 def add():
-    return render_template('add.html')
+    # D-49: 接受 ?title=... query 参数预填到 title input
+    prefill_title = request.args.get('title', '').strip()
+    return render_template('add.html', prefill_title=prefill_title)
 
 @user.route('/search',methods=['POST'])
 def search():
