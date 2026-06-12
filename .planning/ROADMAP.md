@@ -78,7 +78,7 @@
 
 **Depends on**: Phase 2
 
-**Requirements**: COMMENT-01, COMMENT-02, COMMENT-03, COMMENT-04, COMMENT-05, COMMENT-06, COMMENT-07
+**Requirements**: COMMENT-01, COMMENT-02, COMMENT-03, COMMENT-04, COMMENT-05, COMMENT-06, COMMENT-07, ROLE-02
 
 **Success Criteria** (what must be TRUE):
 
@@ -91,8 +91,8 @@
 
 **Plans**: 2 plans
 
-- Plan 3.1: Comment 数据模型重构 + 发布/列表接口 (COMMENT-01, COMMENT-02, COMMENT-03, COMMENT-06)
-- Plan 3.2: 作者删除 + 管理员删除 + 模板集成 (COMMENT-04, COMMENT-05, COMMENT-07)
+- [ ] 03-01-PLAN.md — Comment 数据模型重构 + 发布/列表接口 (COMMENT-01, COMMENT-02, COMMENT-03, COMMENT-06)
+- [ ] 03-02-PLAN.md — 作者删除 + 管理员删除 + 模板集成 (COMMENT-04, COMMENT-05, COMMENT-07, ROLE-02)
 
 ---
 
@@ -165,4 +165,4 @@
 ---
 
 *Roadmap defined: 2026-06-11*
-*Last updated: 2026-06-11 after brownfield project initialization*
+*Last updated: 2026-06-12 after Phase 3 planning*
