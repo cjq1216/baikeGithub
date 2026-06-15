@@ -83,9 +83,9 @@
 - ✓ make test / pytest passes on fresh venv; README documents how — v1.0
 - ✓ Third-party can clone + docker run + nginx reverse proxy + smoke flow — v1.0
 
-### Active (V2 backlog, see `.planning/REQUIREMENTS.md` § v2 Requirements if created)
+### Active (V2 backlog, see `.planning/milestones/v1.0-REQUIREMENTS.md` § v2 Requirements)
 
-(Empty for now — V2 planning pending `/gsd-new-milestone`)
+(Empty for now — V2 planning pending `/gsd-new-milestone`. 19 candidate requirements tracked in archived v1.0-REQUIREMENTS.md.)
 
 ### Out of Scope (reaffirmed v1.0)
 
@@ -115,93 +115,6 @@ V2 候选需求已在 `.planning/REQUIREMENTS.md` § v2 Requirements 中跟踪(1
 3. **V2-AUTH-01** Email 验证 — 提升用户信任
 4. **V2-CONTENT-01** Lemma revision history + diff viewer — 知识库型产品的强需求
 5. **V2-FRONT-03** Real-time updates via SSE/WebSocket — 让评论/浏览数实时刷新
-
-### Active
-
-(本次升级的 v1 范围)
-
-#### 阶段 A: 修 bug + Python 3 迁移(代码本体)
-
-- [ ] **A-01**: 修复 `/api/modify` 提交后无 return/redirect 的 500/空白页 bug
-- [ ] **A-02**: 修复 `/user/detail` 返回 `BaseQuery` 而非结果列表的隐患(加 `.all()` + None 守卫)
-- [ ] **A-03**: 修复 `__tablenanme__` typo,改为 `__tablename__` (三处:`app/api/model.py:18,32,47`)
-- [ ] **A-04**: 移除 `app/api/model.py:9-11` 重复创建的 `Flask(__name__)` 实例,改用统一的 `db.init_app(app)` 模式
-- [ ] **A-05**: `/api/reset` 加上 `if not app.debug: abort(404)` 保护,或改为 CLI 命令
-- [ ] **A-06**: 迁移到 Python 3:删除 `reload(sys)` 和 `sys.setdefaultencoding('utf8')`(`app/__init__.py` 顶部)
-- [ ] **A-07**: `mysql-python` 替换为 `mysqlclient`(`requirements.txt` + 重新生成 venv)
-- [ ] **A-08**: 验证整个注册/登录/词条 CRUD/搜索流程在 Python 3.11+ 上完整跑通
-
-#### 阶段 B: 评论功能实装
-
-- [ ] **B-01**: 解除 `app/api/__init__.py:76-85` `/api/commen` 路由注释,实装 `POST` 发布评论接口
-- [ ] **B-02**: 详情页 `detail.html` 展示该词条下全部评论(按时间倒序)
-- [ ] **B-03**: `detail.html` 提供评论发布表单(仅登录用户可见,无内容时 disabled)
-- [ ] **B-04**: 评论作者可删除自己的评论(加作者校验,他人的评论不显示删除按钮 / 接口校验 user_name)
-- [ ] **B-05**: 评论模型 `Comment.user_name` 建立外键到 `User.name` (或加 `user_id` 列,避免 username 改名后历史评论失主)
-- [ ] **B-06**: 评论删除采用软删除或硬删除 — 决策待定(本项目用硬删除 + 审计日志)
-
-#### 阶段 C: 安全 / 质量重构
-
-- [ ] **C-01**: MySQL 凭据从代码硬编码改为读 `config.ini` / 环境变量
-- [ ] **C-02**: `secret_key` 从硬编码改为启动时从环境变量生成(或首次启动随机生成并写入 `.flask_secret`)
-- [ ] **C-03**: 密码存储从明文改为 `werkzeug.security.generate_password_hash` + `check_password_hash`
-- [ ] **C-04**: 全站表单启用 CSRF 保护(Flask-WTF 或手工 CSRF token)
-- [ ] **C-05**: `User` 表增加 `is_admin: Boolean = False` 字段,提供 `flask promote-admin <username>` CLI 命令
-- [ ] **C-06**: 管理员可删除任意词条 / 评论(`/api/admin/...` 接口 + 详情页"管理员操作"区)
-- [ ] **C-07**: 全局错误处理:404 / 500 统一返回友好的 Jinja 错误页
-
-#### 阶段 D: 现代化前端
-
-- [ ] **D-01**: 移除 jQuery 1.11,改为 HTMX(交互)+ Alpine.js(局部状态)
-- [ ] **D-02**: 移除 Bootstrap 3,改为 Pico.css(或同类无 class CSS 框架)
-- [ ] **D-03**: 替换 wangEditor 2.x 为现代轻量富文本(候选:Quill / EasyMDE / Tiptap;按体积/中文友好度决断)
-- [ ] **D-04**: 重新设计 home / detail / search / add / modify / login / register 模板,统一视觉与可访问性
-- [ ] **D-05**: 实现词条详情页中的 `[[词条名]]` → 详情页链接的 wiki 链接解析(后端 + 前端双重处理)
-
-#### 阶段 E: 产品特性增强
-
-- [ ] **E-01**: `Lemma` 表增加 `updated_at: DateTime` 字段,详情页显示"最后编辑于 YYYY-MM-DD HH:MM"
-- [ ] **E-02**: `Lemma` 表增加 `view_count: Integer = 0` 字段,详情页 GET 时 `+1`,详情页显示浏览数
-- [ ] **E-03**: wiki 链接语法:词条内容中 `[[标题]]` 渲染为到对应词条详情页的链接,目标不存在时显示为红色虚线 + "(创建此词条)" 引导
-- [ ] **E-04**: 词条详情页底部增加"相关词条"区,显示通过 wiki 链接引用了本词条的其他词条(基于反向 link 解析)
-
-#### 阶段 F: Docker 部署
-
-- [ ] **F-01**: 编写生产 `Dockerfile` (python:3.11-slim 基础 + gunicorn 启动)
-- [ ] **F-02**: 镜像内 `entrypoint.sh` 在首次启动时自动 `flask init-db`(不再暴露 `/api/reset`)
-- [ ] **F-03**: 配置通过环境变量注入:`DB_HOST` / `DB_PORT` / `DB_USER` / `DB_PASSWORD` / `DB_NAME` / `FLASK_SECRET`
-- [ ] **F-04**: 不打包 nginx / MySQL;只发布 Flask 应用镜像,假设基础设施已有(README 说明)
-- [ ] **F-05**: README 包含"外部 nginx + 外部 MySQL 下,如何 docker run + 反代 + 数据库初始化"完整步骤
-- [ ] **F-06**: 提供 `.dockerignore`,镜像构建上下文控制在 < 50 MB
-
-#### 阶段 G: 测试与验收
-
-- [ ] **G-01**: 加 `pytest` + `pytest-flask` 测试基础设施
-- [ ] **G-02**: 编写 smoke 测试:`tests/test_smoke.py` 覆盖以下端到端流程
-  - 注册新用户 → 登录 → 创建词条 → 搜索命中 → 进入详情 → 修改词条 → 发布评论 → 删除自己的评论
-  - 管理员登录 → 删除任意词条 / 评论
-- [ ] **G-03**: 提供 `make test` / `make smoke` 命令,README 列出验证步骤
-- [ ] **G-04**: 验证 Docker 镜像在干净的外部 MySQL + nginx 反代下,根据 README 可被第三方拉起并演示
-
-### Out of Scope
-
-显式排除(本 v1 不做),记录理由防止范围漂移:
-
-| 排除项 | 理由 |
-|--------|------|
-| OAuth / 第三方登录 (Google/GitHub) | 用户名+密码 + admin 标志已满足产品雏形,集成 OAuth 增加配置面 |
-| 2FA / TOTP | 课堂作业环境不需要,可作为 v2 |
-| 邮件验证 / 找回密码 | 需要 SMTP 凭据,产品雏形阶段不引入外部依赖 |
-| 实时聊天 / WebSocket | 与"词条 + 评论"核心场景无关 |
-| 词条版本历史 / diff | 复杂,需要新表和 UI,v2 再做 |
-| 全文搜索 (Elasticsearch/Meilisearch) | SQL `LIKE` 对小数据集够用,引入 ES 显著增加运维成本 |
-| K8s 部署 / Helm chart | 假设生产用外部编排,本项目只交付单 Flask 容器 |
-| CI/CD pipeline | smoke 测试本地 `make test` 跑过即可,无外部 CI 集成 |
-| 移动端 App / PWA | 响应式 Web 已足够 |
-| 多语言 i18n | 单一中文界面 |
-| React/Vue 等 SPA 框架 | 与"无重前端"的诉求冲突,HTMX + Pico.css 满足动态交互 |
-| 编辑者 / 版主等中间角色 | v1 只用 regular + admin 二元角色 |
-| 词条保护 / 锁定 | 任何登录用户都可编辑(管理员可回滚/删除兜底) |
 
 ## Context
 
@@ -242,10 +155,10 @@ V2 候选需求已在 `.planning/REQUIREMENTS.md` § v2 Requirements 中跟踪(1
 | 二元角色(regular + admin) 而非三角色 | 实际场景(同学/作业环境)只需要"普通用户 + 管理员",编辑者角色增加复杂度但价值有限 | ✓ Good v1.0 |
 | HTMX + Pico.css 而非 React | "现代化前端"的诉求是"摆脱 jQuery + Bootstrap 3",不一定要走 SPA;HTMX 是 server-rendered 模式下的最自然选择 | ✓ Good v1.0 |
 | 词条间 wiki 链接采用 `[[标题]]` 语法 | Wikipedia / MediaWiki 既成事实,用户已熟悉,后端正则解析成本低 | ✓ Good v1.0 |
-| 凭据/secret 走环境变量而非配置文件 | 容器化部署下,环境变量是十二要素应用标准做法;`config.ini` 仅留作 uwsgi 历史兼容 | — Pending |
-| 评论不实装编辑(仅发布 + 作者删除) | 用户答复"基础 + 列表 + 作者可删";评论可编辑增加 UI 复杂度,对雏形价值低 | — Pending |
-| Docker 不打包 nginx / MySQL | 用户答复"nginx 和数据库是外部的";降低本项目维护成本 | — Pending |
-| 测试仅 smoke,不写完整测试套件 | 用户答复"加 smoke 测试";完整单测超出 v1 范围 | — Pending |
+| 凭据/secret 走环境变量而非配置文件 | 容器化部署下,环境变量是十二要素应用标准做法;`config.ini` 仅留作 uwsgi 历史兼容 | ✓ Good v1.0 |
+| 评论不实装编辑(仅发布 + 作者删除) | 用户答复"基础 + 列表 + 作者可删";评论可编辑增加 UI 复杂度,对雏形价值低 | ✓ Good v1.0 |
+| Docker 不打包 nginx / MySQL | 用户答复"nginx 和数据库是外部的";降低本项目维护成本 | ✓ Good v1.0 |
+| 测试仅 smoke,不写完整测试套件 | 用户答复"加 smoke 测试";完整单测超出 v1 范围 | ✓ Good v1.0 |
 
 ---
 
@@ -267,4 +180,4 @@ V2 候选需求已在 `.planning/REQUIREMENTS.md` § v2 Requirements 中跟踪(1
 4. 用当前状态更新 Context
 
 ---
-*Last updated: 2026-06-11 after brownfield project initialization*
+*Last updated: 2026-06-15 after v1.0 milestone SHIPPED — old A-G 阶段 + 旧 Out of Scope 表已清理(67+18 行),Key Decisions 4 Pending → ✓ Good v1.0,Validated 段重写为 v1.0 SHIPPED 格式*

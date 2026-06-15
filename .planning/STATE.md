@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Complete
-last_updated: "2026-06-12T09:15:00.000Z"
+last_updated: "2026-06-15T08:00:00.000Z"
 progress:
   total_phases: 5
   completed_phases: 5
@@ -27,12 +27,9 @@ progress:
 
 ## Current Position
 
-Phase: 5
-**Phase**: 5 — Docker Deployment, Tests & Acceptance
-**Status**: ✅ Complete (15 atomic commits, 3/3 tests passing, 8/8 SUCCESS criteria verified, verifier verdict PASS)
+**Milestone v1.0**: 🏁 Complete (shipped 2026-06-12, archived 2026-06-15)
 **Progress bar**: `[████████████████████]` 5/5 phases complete (12/12 plans done, 100%)
-**Milestone v1.0**: 🏁 Complete
-**Next action**: `/gsd-complete-milestone` — close v1.0 + memory extraction + retrospective
+**Next action**: `/gsd-new-milestone` — 启动 v2 milestone(questioning → research → requirements → roadmap)
 
 ## Performance Metrics
 
@@ -121,12 +118,16 @@ Phase: 5
 
 ## Session Continuity
 
-- Last session: 2026-06-12 — **Phase 5 executed + verified, milestone v1.0 Complete**
-- 15 atomic commits across Phase 5 (8 from 5.1 + 7 from 5.2, including 1 conftest fix)
-- Verifier verdict: **PASS** (high confidence, 0 gaps, 0 violations)
+- Last session: 2026-06-15 — **v1.0 milestone archive 尾巴完成**
+  - 落盘 v1.0-ROADMAP.md / v1.0-REQUIREMENTS.md(commit 181a0ac 已在 v1 session 完成)
+  - 本 session:PROJECT.md 清理旧 A-G 阶段 67 行 + 旧 Out of Scope 18 行 + Key Decisions 4 Pending → ✓ Good v1.0
+  - 创建 `.planning/MILESTONES.md` 索引
+  - ROADMAP.md 折叠 v1.0 到 `<details>`,加 v2 placeholder
+  - 待:`git rm REQUIREMENTS.md` + safety commit + `git tag -a v1.0` + 引导 `/gsd-new-milestone`
+- v1.0 verifier verdict: **PASS** (high confidence, 0 gaps, 0 violations)
 - 3 tests passing: `test_full_user_flow` + `test_admin_can_delete_any` + `test_non_admin_forbidden`
 - All 4 acknowledged deviations acceptable (no docker daemon / Makefile on Windows / conftest engine hack / LegacyAPIWarning)
-- Next action: `/gsd-complete-milestone` (close v1.0 + memory extraction + retrospective)
+- Next action: **commit + tag v1.0**,then `/gsd-new-milestone` 启动 v2
 
 ## Phase 5 Delivery Artifacts
 
