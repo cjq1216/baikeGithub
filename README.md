@@ -26,7 +26,7 @@ export DB_PORT=3306
 export DB_USER=root
 export DB_PASSWORD=your_password
 export DB_NAME=baike
-export FLASK_SECRET=$(openssl rand -hex 32)  # 生产必传,dev 可省(自动生成临时密钥)
+export FLASK_SECRET=$(openssl rand -hex 32)  # 生产必传;dev 不传则走 instance/.flask_secret 兜底
 
 # 4. 初始化 DB
 flask init-db   # 强制重建 + 灌 admin 'a'/'a' + 7 条种子词条
@@ -56,23 +56,27 @@ python run.py   # 监听 5000 端口
 | `DB_NAME` | MySQL 库名 | `baike` |
 | `FLASK_SECRET` | Flask session 签名密钥 | `$(openssl rand -hex 32)` |
 
-**生产必须传 `FLASK_SECRET`**(容器重启后 dev 临时密钥会丢,导致全员 session 失效)。
+**生产必须传 `FLASK_SECRET`**(容器内 `instance/` 未挂卷,容器重启后兜底密钥会重新生成,全员 session 立即失效;详见 FAQ #2)。
 
 ### 启动
 
 ```bash
-# 1. 准备 .env 文件
+# 1. 生成密钥并准备 .env 文件(注意:docker compose 不展开 .env 里的 shell
+#    命令,必须先在 shell 里生成实际值,再写进 .env)
+export FLASK_SECRET=$(openssl rand -hex 32)
 cat > .env <<EOF
 DB_PASSWORD=your_mysql_password
-FLASK_SECRET=$(openssl rand -hex 32)
+FLASK_SECRET=${FLASK_SECRET}
 EOF
 
 # 2. 复制 compose example
 cp docker-compose.example.yml docker-compose.yml
 
-# 3. 改 docker-compose.yml 里 DB_HOST / DB_USER / DB_NAME 三个非占位 env vars
+# 3. 改 docker-compose.yml 里 DB_HOST / DB_USER / DB_NAME / DB_PORT
+#    改成你的实际值(例:DB_HOST: db.example.com)
 
-# 4. 拉起容器
+# 4. 构建并拉起容器(首次或代码变更后需先 build)
+docker compose build
 docker compose up -d
 
 # 5. (首次)admin 已是 'a'/'a' 默认可用
@@ -80,7 +84,29 @@ docker compose up -d
 
 # 6. 验证
 curl http://localhost:8000/user/home
+
+# 7. 看日志(如需)
+docker compose logs -f baike
 ```
+
+**进阶:`FLASK_SECRET_FILE` 路径支持**
+
+`app/__init__.py` 的 `_resolve_flask_secret()` 还支持从文件读取,适合 K8s `secretKeyRef` 或 Docker `secrets:` 挂载场景:
+
+```bash
+# Docker secrets 方式
+docker run -e FLASK_SECRET_FILE=/run/secrets/flask_secret ...
+
+# K8s Secret 挂载方式
+env:
+  - name: FLASK_SECRET_FILE
+    value: /var/run/secrets/baike/flask_secret
+volumeMounts:
+  - name: flask-secret
+    mountPath: /var/run/secrets/baike
+```
+
+优先级:`FLASK_SECRET` env > `FLASK_SECRET_FILE` 文件 > `instance/.flask_secret` 持久化(容器内未挂卷,重启会丢)。
 
 ### nginx 反代示例
 
@@ -128,6 +154,6 @@ SQLite in-memory,无需 MySQL 容器;每个测试函数独立 DB 状态。
 ## 已知限制 / FAQ
 
 1. **本项目不打包 MySQL**:`docker-compose.example.yml` 仅含 baike app;MySQL / nginx 假定由外部基础设施提供。
-2. **`FLASK_SECRET` 生产必传**:容器重启 dev 临时密钥会丢;生产用 `openssl rand -hex 32` 生成。
+2. **`FLASK_SECRET` 生产必传**:`instance/.flask_secret` 兜底机制在容器里**未挂卷**,容器重启会重新 `os.urandom(32)`,全员 session 立即失效。生产必须 `export FLASK_SECRET=$(openssl rand -hex 32)` 注入 env,或用 `FLASK_SECRET_FILE` 挂载 secret 文件。
 3. **容器重启数据保留**:entrypoint 走 `flask init-db --if-empty`,已有数据时秒返(不 drop)。要强制重灌:`docker compose exec baike flask init-db`(不带 flag)。
 4. **HTMX / Pico.css 走 jsdelivr CDN**:浏览器需能访问 `cdn.jsdelivr.net`;内网部署请把这两份资产 vendor 到 `app/static/`。

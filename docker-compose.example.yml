@@ -2,10 +2,13 @@
 # MySQL 与 nginx 假定由外部基础设施提供,本 compose 仅展示 baike app 启动方式
 # 使用方法:
 #   1. 复制本文件为 docker-compose.yml: cp docker-compose.example.yml docker-compose.yml
-#   2. 创建 .env 文件并填入 DB_PASSWORD / FLASK_SECRET:
-#        echo 'DB_PASSWORD=your_mysql_password' > .env
-#        echo 'FLASK_SECRET=$(openssl rand -hex 32)' >> .env
-#   3. docker compose up -d
+#   2. 在 shell 里生成密钥(注意:docker compose 不展开 .env 里的 shell
+#      命令,必须先在 shell 里生成实际值,再写进 .env):
+#        export FLASK_SECRET=$(openssl rand -hex 32)
+#        echo "DB_PASSWORD=your_mysql_password" > .env
+#        echo "FLASK_SECRET=${FLASK_SECRET}" >> .env
+#   3. 改下面 environment 里 DB_HOST / DB_USER / DB_NAME / DB_PORT 为你的实际值
+#   4. 构建并拉起: docker compose build && docker compose up -d
 services:
   baike:
     image: baike:latest
