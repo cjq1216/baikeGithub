@@ -1,22 +1,23 @@
 # Python 3 sources are UTF-8 by default; no setdefaultencoding needed
-# MySQL driver shim — real mysqlclient (Linux/prod) is preferred; on Windows
-# the C extension typically fails to build, so we fall back to PyMySQL which
-# registers itself as the MySQLdb module. SQLAlchemy 2.x uses the
-# `mysql+mysqldb` driver name (the `mysql+mysqlclient` alias was removed).
-try:
-    import MySQLdb  # noqa: F401  — real mysqlclient (Linux/prod)
-except ImportError:
-    try:
-        import pymysql  # type: ignore
-        pymysql.install_as_MySQLdb()
-    except ImportError:
-        import sys
-        sys.stderr.write(
-            "FATAL: MySQL driver missing. Need mysqlclient (Linux) or PyMySQL (Windows).\n"
-            "       Run: pip install -r requirements.txt\n"
-        )
-        raise
+# PyMySQL registers itself as the MySQLdb module so SQLAlchemy's
+# `mysql+mysqldb` driver name (the `mysql+mysqlclient` alias was removed
+# in SQLAlchemy 2.x) works on every platform without compiling a C extension.
+import pymysql
+pymysql.install_as_MySQLdb()
 import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Load .env.{APP_ENV} before any config check. APP_ENV defaults to 'dev'.
+# 'test' is reserved for conftest — it pre-sets DB_* via os.environ.setdefault
+# and skips the .env lookup so pytest doesn't need an .env file on disk.
+# python-dotenv's default override=False means shell env / docker --env-file
+# always wins over the .env file values.
+APP_ENV = os.environ.get('APP_ENV', 'dev')
+if APP_ENV != 'test':
+    _dotenv_path = Path(__file__).resolve().parent.parent / f'.env.{APP_ENV}'
+    load_dotenv(dotenv_path=str(_dotenv_path), override=False)
+
 import re
 from flask import Flask, render_template, request, redirect, url_for, flash, current_app
 from flask_login import LoginManager
@@ -99,11 +100,41 @@ def wikilink_filter(content):
 
 
 # D-05/D-07: DB_* are required; missing any one is a hard fail (no silent
-# default back to the old hardcoded values).
-_required_db_vars = ('DB_HOST', 'DB_PORT', 'DB_USER', 'DB_PASSWORD', 'DB_NAME')
-for _name in _required_db_vars:
-    if _name not in os.environ:
-        raise RuntimeError("Missing required env var: " + _name)
+# default back to the old hardcoded values). Values come from .env.{APP_ENV}
+# (dev) or `docker run --env-file` / shell (prod), never hardcoded.
+# 空字符串也算缺(.env.prod 模板里 DB_* 都是空,用户必须填)。
+# dev 模式 DB_PASSWORD 允许空(XAMPP/MAMP 本地 MySQL 常见无密码场景)。
+_required = ('DB_HOST', 'DB_PORT', 'DB_USER', 'DB_NAME')
+_missing = [v for v in _required if not os.environ.get(v, '').strip()]
+if APP_ENV != 'dev' and not os.environ.get('DB_PASSWORD', '').strip():
+    _missing.append('DB_PASSWORD')
+# DB_PORT 还必须是合法整数,否则 URL.create 里的 int() 静默炸
+_db_port_raw = os.environ.get('DB_PORT', '')
+if _db_port_raw.strip():
+    try:
+        int(_db_port_raw)
+    except ValueError:
+        _missing.append(f'DB_PORT (must be a valid integer, got {_db_port_raw!r})')
+elif 'DB_PORT' not in _missing:
+    _missing.append('DB_PORT')
+
+if _missing:
+    raise RuntimeError(
+        f"Missing/empty required env var(s): {', '.join(_missing)}\n"
+        f"  APP_ENV={APP_ENV} (tried to load .env.{APP_ENV})\n"
+        f"  dev  mode: ensure .env.{APP_ENV} exists in project root\n"
+        f"  prod mode: pass via 'docker run --env-file .env.prod ...'"
+    )
+
+# prod 模式 FLASK_SECRET 必传:容器未挂卷,instance/.flask_secret 兜底
+# 在容器重启时会重新生成,全员 session 立即失效。
+if APP_ENV == 'prod':
+    if not (os.environ.get('FLASK_SECRET') or os.environ.get('FLASK_SECRET_FILE')):
+        raise RuntimeError(
+            "FLASK_SECRET (or FLASK_SECRET_FILE) required when APP_ENV=prod\n"
+            "  容器未挂卷,instance/.flask_secret 兜底会丢失,重启后全员 session 失效"
+        )
+
 app.config['SQLALCHEMY_DATABASE_URI'] = URL.create(
     drivername='mysql+mysqldb',
     username=os.environ['DB_USER'],

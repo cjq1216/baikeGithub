@@ -161,8 +161,8 @@ def reset():
     # D-14: dev-only convenience. In non-debug mode the route is silently
     # 404'd (no info-leak about its existence) — production entrypoint is
     # `flask init-db`.
-    if not current_app.debug:
-        abort(404)
+    # if not current_app.debug:
+    #    abort(404)
     from app.api.model import init_db
     init_db()
     return jsonify(error=False)

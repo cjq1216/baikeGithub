@@ -42,7 +42,7 @@
       <ul id="nav-right"
           class="baike-nav-actions"
           hx-get="/api/nav-fragment"
-          hx-trigger="nav-refresh from:body"
+          hx-trigger="load, nav-refresh from:body"
           hx-swap="outerHTML">
         <!-- 登录/用户名/登出按钮由 Plan 4.3 /api/nav-fragment 端点首次触发时填充 -->
         <li><a href="{{ url_for('apple.login') }}">登录</a></li>

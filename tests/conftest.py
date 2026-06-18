@@ -7,6 +7,11 @@ import pytest
 from sqlalchemy import create_engine
 
 
+# APP_ENV='test' 触发 app/__init__.py 跳过 load_dotenv(.env.dev) — conftest
+# 下面 setdefault 已经把 5 个 DB_* 都设了,不需要 .env 文件;反过来 load .env.dev
+# 反而要求 tests 在 CWD 找到文件,CI 上不友好。
+os.environ['APP_ENV'] = 'test'
+
 # 给 DB_* env vars 占位(app/__init__.py 在 import 时会检查这些变量;我们随后通过
 # 替换 db.engines[None] 把 URI 切到 sqlite:///:memory:,这样 5 个 env vars 只是
 # 为了让 app/__init__.py 的 import-time RuntimeError 守卫不触发)。

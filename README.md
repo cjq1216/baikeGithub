@@ -20,13 +20,9 @@ python -m venv venvbaike
 source venvbaike/bin/activate     # Windows: venvbaike\Scripts\activate
 pip install -r requirements.txt
 
-# 3. 设 env vars(下面 6 个必填)
-export DB_HOST=localhost
-export DB_PORT=3306
-export DB_USER=root
-export DB_PASSWORD=your_password
-export DB_NAME=baike
-export FLASK_SECRET=$(openssl rand -hex 32)  # 生产必传;dev 不传则走 instance/.flask_secret 兜底
+# 3. .env.dev 是模板,clone 后已经存在且默认指向 localhost:3306
+#    改值直接编辑 .env.dev 重启 python run.py 即可
+#    APP_ENV 默认 'dev',无需 export
 
 # 4. 初始化 DB
 flask init-db   # 强制重建 + 灌 admin 'a'/'a' + 7 条种子词条
@@ -45,47 +41,53 @@ python run.py   # 监听 5000 端口
 - MySQL 5.7+ / 8.0 实例可达(外部基础设施,本项目不打包 MySQL)
 - nginx 反代(外部基础设施,本项目不打包 nginx)
 
-### 环境变量(6 个必填)
+### 配置文件
 
-| 变量 | 说明 | 示例 |
+| 文件 | 用途 | 是否进 git |
+|------|------|---|
+| `.env.dev` | 本地开发默认值(localhost + root + 空密码) | ✅ 模板 |
+| `.env.prod` | 生产配置模板(空值待填) | ✅ 模板 |
+| `.env.prod.local` | 生产实际配置(从 `.env.prod` 复制,填真实值) | ❌ `.gitignore` |
+
+### 环境变量
+
+| 变量 | 说明 | 默认 |
 |------|------|------|
-| `DB_HOST` | MySQL 主机 | `db.internal.example.com` |
-| `DB_PORT` | MySQL 端口 | `3306` |
-| `DB_USER` | MySQL 用户 | `baike_user` |
-| `DB_PASSWORD` | MySQL 密码 | (从 secrets manager 取) |
-| `DB_NAME` | MySQL 库名 | `baike` |
-| `FLASK_SECRET` | Flask session 签名密钥 | `$(openssl rand -hex 32)` |
+| `APP_ENV` | 加载哪个 `.env` 文件,可取 `dev` / `prod` / `staging` | `dev` |
+| `DB_HOST` | MySQL 主机 | `.env.dev` = `localhost` |
+| `DB_PORT` | MySQL 端口 | `.env.dev` = `3306` |
+| `DB_USER` | MySQL 用户 | `.env.dev` = `root` |
+| `DB_PASSWORD` | MySQL 密码 | `.env.dev` = 空 |
+| `DB_NAME` | MySQL 库名 | `.env.dev` = `baike` |
+| `FLASK_SECRET` | Flask session 签名密钥(`APP_ENV=prod` 必传) | dev 走 `instance/.flask_secret` 兜底 |
 
-**生产必须传 `FLASK_SECRET`**(容器内 `instance/` 未挂卷,容器重启后兜底密钥会重新生成,全员 session 立即失效;详见 FAQ #2)。
+**优先级**:`docker run --env-file` 注入的 env > `.env` 文件值。这是 `python-dotenv` 默认 `override=False` 的语义,容器场景下 env_file 始终是权威源。
 
 ### 启动
 
 ```bash
-# 1. 生成密钥并准备 .env 文件(注意:docker compose 不展开 .env 里的 shell
-#    命令,必须先在 shell 里生成实际值,再写进 .env)
-export FLASK_SECRET=$(openssl rand -hex 32)
-cat > .env <<EOF
-DB_PASSWORD=your_mysql_password
-FLASK_SECRET=${FLASK_SECRET}
-EOF
+# 1. 准备生产配置(从模板复制一份填真实值,不要 commit)
+cp .env.prod .env.prod.local
+vim .env.prod.local
+#   必填两行:DB_PASSWORD=... / FLASK_SECRET=$(openssl rand -hex 32)
 
-# 2. 复制 compose example
+# 2a. 用 docker compose(直接用 env_file 字段)
 cp docker-compose.example.yml docker-compose.yml
-
-# 3. 改 docker-compose.yml 里 DB_HOST / DB_USER / DB_NAME / DB_PORT
-#    改成你的实际值(例:DB_HOST: db.example.com)
-
-# 4. 构建并拉起容器(首次或代码变更后需先 build)
-docker compose build
+docker compose build          # 首次或代码变更后
 docker compose up -d
 
-# 5. (首次)admin 已是 'a'/'a' 默认可用
-# 后续新增用户转 admin:docker compose exec baike flask promote-admin <username>
+# 2b. 或:不用 compose,直接 docker run
+docker load -i baike-latest.tar
+docker run -d --name baike -p 8000:8000 \
+  --env-file .env.prod.local \
+  --restart unless-stopped \
+  baike:latest
 
-# 6. 验证
+# 3. (首次)admin 已是 'a'/'a' 默认可用
+#    后续新增用户转 admin:docker compose exec baike flask promote-admin <username>
+
+# 4. 验证
 curl http://localhost:8000/user/home
-
-# 7. 看日志(如需)
 docker compose logs -f baike
 ```
 
@@ -154,6 +156,7 @@ SQLite in-memory,无需 MySQL 容器;每个测试函数独立 DB 状态。
 ## 已知限制 / FAQ
 
 1. **本项目不打包 MySQL**:`docker-compose.example.yml` 仅含 baike app;MySQL / nginx 假定由外部基础设施提供。
-2. **`FLASK_SECRET` 生产必传**:`instance/.flask_secret` 兜底机制在容器里**未挂卷**,容器重启会重新 `os.urandom(32)`,全员 session 立即失效。生产必须 `export FLASK_SECRET=$(openssl rand -hex 32)` 注入 env,或用 `FLASK_SECRET_FILE` 挂载 secret 文件。
+2. **`FLASK_SECRET` 生产必传**:`instance/.flask_secret` 兜底机制在容器里**未挂卷**,容器重启会重新 `os.urandom(32)`,全员 session 立即失效。生产必须把 `FLASK_SECRET=$(openssl rand -hex 32)` 写进 `.env.prod.local`,或用 `FLASK_SECRET_FILE` 挂载 secret 文件。
 3. **容器重启数据保留**:entrypoint 走 `flask init-db --if-empty`,已有数据时秒返(不 drop)。要强制重灌:`docker compose exec baike flask init-db`(不带 flag)。
 4. **HTMX / Pico.css 走 jsdelivr CDN**:浏览器需能访问 `cdn.jsdelivr.net`;内网部署请把这两份资产 vendor 到 `app/static/`。
+5. **`.env` 文件加载规则**:`APP_ENV` 决定加载 `.env.dev` / `.env.prod` / `.env.staging` 哪个文件,默认 `dev`。`docker run --env-file` 注入的变量优先于文件值(`python-dotenv` 默认 `override=False`)。`.env.prod.local` 含真实密码,已在 `.gitignore` 保护;`.env.dev` / `.env.prod` 是模板,正常进 git。

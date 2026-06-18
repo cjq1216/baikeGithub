@@ -9,3 +9,9 @@ ENV/
 # local env files (secrets)
 .env
 .envrc
+.env.*.local       # 任何 .env.{env}.local 形式的本地覆盖(部署时填的 .env.prod.local 在此)
+.env.prod
+# 注意:.env.dev  是模板,正常进 git
+
+# 构建产物
+baike-latest.tar
